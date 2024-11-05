@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "753705759155",
+    "project_id": "chatempresa-9b870",
+    "storage_bucket": "chatempresa-9b870.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753705759155:android:c683263f83578c62375bc6",
+        "android_client_info": {
+          "package_name": "com.example.chatempresa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC65PW0ETjjPGG-u5qpVskFya9iCp9meEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
