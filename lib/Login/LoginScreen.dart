@@ -1,6 +1,6 @@
-import 'package:chatempresa/BottomNavigation.dart';
+import 'package:chatempresa/Empleado/BottomNavigation.dart';
 import 'package:chatempresa/Login/PantallaRegistro.dart';
-import 'package:chatempresa/PantallaChat.dart';
+import 'package:chatempresa/Empleado/PantallaChat.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

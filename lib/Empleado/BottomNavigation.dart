@@ -1,6 +1,6 @@
-import 'package:chatempresa/PantallaChat.dart';
-import 'package:chatempresa/PantallaGrupos.dart';
-import 'package:chatempresa/PantallaProyectos.dart';
+import 'package:chatempresa/Empleado/PantallaChat.dart';
+import 'package:chatempresa/Empleado/PantallaGrupos.dart';
+import 'package:chatempresa/Empleado/PantallaProyectos.dart';
 import 'package:flutter/material.dart';
 
 class Bottomnavigation extends StatefulWidget {

@@ -1,4 +1,3 @@
-import 'package:chatempresa/ChatItem.dart';
 import 'package:flutter/material.dart';
 
 class PantallaGrupos extends StatelessWidget {
@@ -37,20 +36,7 @@ class PantallaGrupos extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: ListView(
-              children: [
-                // Elementos de chat con nombre, mensaje, hora, y número de notificaciones.
-                ChatItem(name: 'Rodrigo Gestor', message: '💬 Sí, gracias', time: '11:59'),
-                ChatItem(name: 'Natalia C', message: '📆 Para el jueves', time: '11:48', notificationCount: 1),
-                ChatItem(name: 'Inge Nata', message: '💬 ¿Pudiste arreglarlo?', time: '11:36'),
-                ChatItem(name: 'Lic Peso Pluma', message: 'Vamos a chambear', time: '11:32'),
-                ChatItem(name: 'Sofia F', message: 'Mañana con más calma', time: '10:57'),
-                ChatItem(name: 'Eduardo J', message: '📆 Ahorita no, joven', time: '08:48'),
-                ChatItem(name: 'JH', message: '💬 Está bien', time: 'Ayer'),
-              ],
-            ),
-          ),
+         
         ],
       ),
     );
