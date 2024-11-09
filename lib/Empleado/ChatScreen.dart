@@ -105,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          '${message['sender']}: ${message['message']}', // Mostrar el nombre del remitente
+                          '${message['message']}', // Mostrar el nombre del remitente
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
