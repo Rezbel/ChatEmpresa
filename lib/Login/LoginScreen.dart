@@ -1,3 +1,4 @@
+import 'package:chatempresa/Administrador/PABottomNavigation.dart';
 import 'package:chatempresa/Empleado/BottomNavigation.dart';
 import 'package:chatempresa/Login/PantallaRegistro.dart';
 import 'package:chatempresa/Empleado/PantallaChat.dart';
@@ -36,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         if (role == 'administrador') {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Pantallachat()));//ejemplo por ahora
+              context, MaterialPageRoute(builder: (context) => PABottomnavigation()));//ejemplo por ahora
         } else if (role == 'empleado') {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Bottomnavigation()));

@@ -7,6 +7,7 @@ void main() async {
   await Firebase.initializeApp(); // Inicializa Firebase.
   
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: LoginScreen(),
   ));
 }
