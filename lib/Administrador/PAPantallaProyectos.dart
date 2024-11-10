@@ -1,3 +1,4 @@
+import 'package:chatempresa/Administrador/PAPantallaCrearProyecto.dart';
 import 'package:flutter/material.dart';
 
 
@@ -10,13 +11,14 @@ class PAPantallaproyectos extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
-        title: Text('Bater Papo', style: TextStyle(fontSize: 20,
+        title: Text('Bater Papo', style: TextStyle(fontSize: 30,
         color: Colors.white),),
         backgroundColor: Color(0xFF282828),
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.more_vert),
+            color: Colors.white,
             onPressed: () {},
           ),
         ],
@@ -26,10 +28,6 @@ class PAPantallaproyectos extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Proyectos',
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
             SizedBox(height: 8),
             TextField(
               decoration: InputDecoration(
@@ -82,6 +80,22 @@ class PAPantallaproyectos extends StatelessWidget {
                     'Inactivos (0)',
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
+                  Align(
+              alignment: Alignment.centerRight, // Alinea el botón a la derecha
+              child: TextButton(
+              onPressed: () {
+                // Navegar a la pantalla PAPantallaCrearProyecto
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PAPantallaCrearProyecto()),
+                );
+              },
+              style: TextButton.styleFrom(
+              backgroundColor: Colors.white,  // Color del texto
+             ),
+            child: Text('Nuevo Proyecto'),
+            )
+           )
                 ],
               ),
             ),
