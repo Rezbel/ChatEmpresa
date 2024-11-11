@@ -37,5 +37,5 @@ flutter {
     source = "../.."
 }
 
-// Asegúrate de que esta línea esté al final
+
 apply plugin: 'com.google.gms.google-services'
