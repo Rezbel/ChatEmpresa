@@ -29,17 +29,17 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _getUserNames() async {
     // Consultar los nombres de ambos usuarios desde la colección `users`
     DocumentSnapshot currentUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('usuarios')
         .doc(widget.currentUserId)
         .get();
     DocumentSnapshot otherUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('usuarios')
         .doc(widget.otherUserId)
         .get();
 
     setState(() {
-      currentUserName = currentUserSnapshot['name'];
-      otherUserName = otherUserSnapshot['name'];
+      currentUserName = currentUserSnapshot['nombre'];
+      otherUserName = otherUserSnapshot['nombre'];
     });
   }
 
@@ -56,10 +56,10 @@ class _ChatScreenState extends State<ChatScreen> {
     if (currentUserName == null) return; // Esperar a que el nombre esté disponible
 
     String chatId = getChatId();
-    await FirebaseFirestore.instance.collection('chats').doc(chatId).collection('messages').add({
-      'sender': currentUserName, // Usar el nombre en lugar del ID
-      'message': message,
-      'timestamp': FieldValue.serverTimestamp(),
+    await FirebaseFirestore.instance.collection('chats').doc(chatId).collection('mensajes').add({
+      'remitente': currentUserName, // Usar el nombre en lugar del ID
+      'menaje': message,
+      'FechaHora': FieldValue.serverTimestamp(),
     });
   }
 
@@ -80,8 +80,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   ? FirebaseFirestore.instance
                       .collection('chats')
                       .doc(chatId)
-                      .collection('messages')
-                      .orderBy('timestamp', descending: true)
+                      .collection('mensajes')
+                      .orderBy('FechaHora', descending: true)
                       .snapshots()
                   : null,
               builder: (context, snapshot) {
@@ -94,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     var message = messages[index];
-                    bool isSentByCurrentUser = message['sender'] == currentUserName;
+                    bool isSentByCurrentUser = message['remitente'] == currentUserName;
                     return Align(
                       alignment: isSentByCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
@@ -105,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          '${message['message']}', // Mostrar el nombre del remitente
+                          '${message['mensaje']}', // Mostrar el nombre del remitente
                           style: TextStyle(color: Colors.white),
                         ),
                       ),

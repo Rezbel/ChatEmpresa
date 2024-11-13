@@ -104,7 +104,7 @@ class ChatsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').snapshots(),
+      stream: FirebaseFirestore.instance.collection('usuarios').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
@@ -130,7 +130,7 @@ class ChatsList extends StatelessWidget {
                   child: Icon(Icons.person, color: Colors.white),
                 ),
                 title: Text(
-                  user['name'],
+                  user['nombre'],
                   style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(

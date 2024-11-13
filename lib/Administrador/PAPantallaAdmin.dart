@@ -1,3 +1,4 @@
+import 'package:chatempresa/Administrador/PANuevoUsuario.dart';
 import 'package:flutter/material.dart';
 
 class PAPantallaAdmin extends StatelessWidget {
@@ -37,7 +38,7 @@ class PAPantallaAdmin extends StatelessWidget {
               label: 'Ver empleados',
               onTap: () {
                 // Navegación sin destino especificado
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Placeholder()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => PANuevoUsuario()));
               },
             ),
             SizedBox(height: 20),

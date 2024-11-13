@@ -11,7 +11,7 @@ class Pantallachat extends StatefulWidget {
 }
 
 class _PantallachatState extends State<Pantallachat> {
-  final currentUser = FirebaseAuth.instance.currentUser;
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,8 @@ class _PantallachatState extends State<Pantallachat> {
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('users').snapshots(),
+              stream:
+                  FirebaseFirestore.instance.collection('usuarios').snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
@@ -63,22 +64,47 @@ class _PantallachatState extends State<Pantallachat> {
                   itemCount: users.length,
                   itemBuilder: (context, index) {
                     var user = users[index];
-                    return ListTile(
-                      title: Text(
-                        user['name'],
-                        style: TextStyle(color: Colors.white),
+                    return Container(
+                      margin: EdgeInsets.symmetric(
+                          vertical: 8.0,
+                          horizontal: 8.0),
+                      decoration: BoxDecoration(
+                        color: Color(
+                            0xFFE6EFFF), // Color de fondo de la cajita de mensaje
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatScreen(
-                              currentUserId: currentUser!.uid,
-                              otherUserId: user.id,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          child: Icon(Icons.person, color: Colors.white),
+                        ),
+                        title: Text(
+                          user['usuario'],
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          'Último mensaje...',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        trailing: Text(
+                          'Hora',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                currentUserId: currentUser!.uid,
+                                otherUserId: user.id,
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     );
                   },
                 );
