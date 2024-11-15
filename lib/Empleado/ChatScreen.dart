@@ -38,8 +38,8 @@ class _ChatScreenState extends State<ChatScreen> {
         .get();
 
     setState(() {
-      currentUserName = currentUserSnapshot['nombre'];
-      otherUserName = otherUserSnapshot['nombre'];
+      currentUserName = currentUserSnapshot['usuario']; 
+      otherUserName = otherUserSnapshot['usuario'];
     });
   }
 
@@ -57,11 +57,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     String chatId = getChatId();
     await FirebaseFirestore.instance.collection('chats').doc(chatId).collection('mensajes').add({
-      'remitente': currentUserName, // Usar el nombre en lugar del ID
-      'menaje': message,
-      'FechaHora': FieldValue.serverTimestamp(),
-    });
-  }
+    'remitente': currentUserName, // Use the name instead of the ID
+    'mensaje': message, // Corrected the typo here
+    'FechaHora': FieldValue.serverTimestamp(),
+  });
+}
 
   @override
   Widget build(BuildContext context) {

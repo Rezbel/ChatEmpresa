@@ -11,7 +11,7 @@ class Pantallachat extends StatefulWidget {
 }
 
 class _PantallachatState extends State<Pantallachat> {
-  User? currentUser = FirebaseAuth.instance.currentUser;
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -50,40 +50,34 @@ class _PantallachatState extends State<Pantallachat> {
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('usuarios').snapshots(),
+              stream: FirebaseFirestore.instance.collection('usuarios').snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
                 }
-                var users = snapshot.data!.docs
-                    .where((user) => user.id != currentUser!.uid)
-                    .toList();
+                var users = snapshot.data!.docs.where((user) {
+        return user['uid'] != currentUser!.uid;
+      }).toList();
 
                 return ListView.builder(
                   itemCount: users.length,
                   itemBuilder: (context, index) {
                     var user = users[index];
                     return Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 8.0),
+                      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
                       decoration: BoxDecoration(
-                        color: Color(
-                            0xFFE6EFFF), // Color de fondo de la cajita de mensaje
+                        color: Color(0xFFE6EFFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
+                        contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                         leading: CircleAvatar(
                           backgroundColor: Colors.grey,
                           child: Icon(Icons.person, color: Colors.white),
                         ),
                         title: Text(
                           user['usuario'],
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
                           'Último mensaje...',

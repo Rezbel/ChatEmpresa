@@ -11,7 +11,8 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _correoController = TextEditingController();
   final TextEditingController _contrasenaController = TextEditingController();
-  final TextEditingController _confirmarcontrasenaController = TextEditingController();
+  final TextEditingController _confirmarcontrasenaController =
+      TextEditingController();
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _apellidosController = TextEditingController();
   final TextEditingController _usuarioController = TextEditingController();
@@ -36,14 +37,20 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
     try {
       String nombreUsuario = _usuarioController.text;
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _correoController.text,
+        password: _contrasenaController.text,
+      );
 
       await _firestore.collection('usuarios').doc(nombreUsuario).set({
         'correo': _correoController.text,
         'nombre': _nombreController.text,
         'apellido': _apellidosController.text,
         'usuario': nombreUsuario,
-        'rol': '', 
-        'contrasena': _contrasenaController.text
+        'rol': '',
+        'contrasena': _confirmarcontrasenaController.text,
+        'uid': userCredential.user!.uid, // Agregar el UID del usuario
       });
 
       // Navegar a la pantalla de login
@@ -66,7 +73,8 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
       backgroundColor: Color(0xFF282828),
       appBar: AppBar(
         backgroundColor: Color(0xFF282828),
-        iconTheme: IconThemeData( color: Colors.white,
+        iconTheme: IconThemeData(
+          color: Colors.white,
         ),
       ),
       body: SingleChildScrollView(
@@ -74,7 +82,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
           padding: const EdgeInsets.all(25.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children:[
+            children: [
               SizedBox(height: 20),
               Text(
                 'Registrar usuario',
@@ -85,8 +93,6 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
                 ),
               ),
               SizedBox(height: 40),
-              
-          
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -186,7 +192,8 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(color: Colors.white)
-                            : Text('Registrar', style: TextStyle(color: Colors.white)),
+                            : Text('Registrar',
+                                style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ],

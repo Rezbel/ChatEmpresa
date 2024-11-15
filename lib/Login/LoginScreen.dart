@@ -12,75 +12,88 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final TextEditingController _usuarioController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _correoController = TextEditingController();
   final TextEditingController _contrasenaController = TextEditingController();
   bool _isLoading = false;
   bool _seeText = true;
 
   Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      // Buscar el usuario en Firestore por correo
-      final QuerySnapshot result = await _firestore
-          .collection('usuarios')
-          .where('usuario', isEqualTo: _usuarioController.text)
-          .get();
+  try {
+    // Iniciar sesión con Firebase Authentication
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      email: _correoController.text,
+      password: _contrasenaController.text,
+    );
 
-      if (result.docs.isNotEmpty) {
-        final DocumentSnapshot userDoc = result.docs.first;
-        final role = userDoc['rol'];
+    User? user= userCredential.user;
 
-        // Navegar a la pantalla correspondiente según el rol
-        if (mounted) {
-          if (role == 'administrador') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => PABottomnavigation()),
-            );
-          } else if (role == 'empleado') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Bottomnavigation()),
-            );
-          }
+    // Obtener el correo del usuario autenticado
+    String correo = _correoController.text;
+
+    // Buscar el usuario por correo electrónico en Firestore
+    final QuerySnapshot userQuery = await _firestore
+        .collection('usuarios')
+        .where('correo', isEqualTo: correo)
+        .limit(1) // Limitar la consulta a un solo documento
+        .get();
+
+    if (userQuery.docs.isNotEmpty) {
+      final userDoc = userQuery.docs.first;
+      final role = userDoc['rol'];
+
+      // Navegar a la pantalla correspondiente según el rol
+      if (mounted) {
+        if (role == 'administrador') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => PABottomnavigation()),
+          );
+        } else if (role == 'empleado') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Bottomnavigation()),
+          );
         }
-      } else {
-        print("Usuario no encontrado en Firestore.");
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Usuario no encontrado en Firestore."),
-        ));
       }
-    } on FirebaseAuthException catch (e) {
-      String errorMessage;
-      switch (e.code) {
-        case 'invalid-email':
-          errorMessage = 'El correo electrónico no es válido.';
-          break;
-        case 'user-disabled':
-          errorMessage = 'El usuario ha sido deshabilitado.';
-          break;
-        case 'user-not-found':
-          errorMessage = 'No se encontró al usuario con ese correo.';
-          break;
-        case 'wrong-password':
-          errorMessage = 'La contraseña es incorrecta.';
-          break;
-        default:
-          errorMessage = 'Algo salió mal';
-      }
-      print('Error al iniciar sesión: $e');
+    } else {
+      // El usuario no tiene un rol asignado o no existe en Firestore
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(errorMessage),
+        content: Text("Usuario no encontrado en Firestore."),
       ));
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
+  } on FirebaseAuthException catch (e) {
+    String errorMessage;
+    switch (e.code) {
+      case 'invalid-email':
+        errorMessage = 'El correo electrónico no es válido.';
+        break;
+      case 'user-disabled':
+        errorMessage = 'El usuario ha sido deshabilitado.';
+        break;
+      case 'user-not-found':
+        errorMessage = 'No se encontró al usuario con ese correo.';
+        break;
+      case 'wrong-password':
+        errorMessage = 'La contraseña es incorrecta.';
+        break;
+      default:
+        errorMessage = 'Algo salió mal';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(errorMessage),
+    ));
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -119,9 +132,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextField(
-                      controller: _usuarioController,
+                      controller: _correoController,
                       decoration: InputDecoration(
-                        labelText: 'Correo electrónico',
+                        labelText: 'Correo Electrónico',
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 25,
@@ -139,16 +152,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.black),
                         ),
-                        suffix: ElevatedButton(
+                        suffix: IconButton(
+                          icon: Icon(
+                            _seeText ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.black,
+                          ),
                           onPressed: () {
                             setState(() {
                               _seeText = !_seeText;
                             });
                           },
-                          child: Icon(Icons.remove_red_eye),
-                          style: ButtonStyle(
-                            iconColor: MaterialStateProperty.all(Colors.black),
-                          ),
                         ),
                         labelText: 'Contraseña',
                         labelStyle: TextStyle(
