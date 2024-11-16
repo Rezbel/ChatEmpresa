@@ -104,60 +104,67 @@ class ChatsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
-        var users = snapshot.data!.docs
-            .where((user) => user.id != currentUser!.uid)
-            .toList();
+              stream:
+                  FirebaseFirestore.instance.collection('usuarios').snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                // Filtrar usuarios que no son el usuario actual
+                var users = snapshot.data!.docs.where((user) {
+                  return user.id !=
+                      currentUser!.uid; // Filtra por el ID del documento
+                }).toList();
 
-        return ListView.builder(
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            var user = users[index];
-            return Container(
-              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0), // Añadir márgenes para separación
-              decoration: BoxDecoration(
-                color: Color(0xFFE6EFFF), // Color de fondo de la cajita de mensaje
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ListTile(
-                contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, color: Colors.white),
-                ),
-                title: Text(
-                  user['name'],
-                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  'Último mensaje...',
-                  style: TextStyle(color: Colors.black54),
-                ),
-                trailing: Text(
-                  'Hora',
-                  style: TextStyle(color: Colors.black54),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PAChatScreen(
-                        currentUserId: currentUser!.uid,
-                        otherUserId: user.id,
+                return ListView.builder(
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    var user = users[index];
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE6EFFF),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                  );
-                },
-              ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        leading: const CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          child: Icon(Icons.person, color: Colors.white),
+                        ),
+                        title: Text(
+                          user[
+                              'username'], // Asegúrate de que este campo exista en Firestore
+                          style: const TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: const Text(
+                          'Último mensaje...',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        trailing: const Text(
+                          'Hora',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PAChatScreen(
+                                currentUserId: currentUser!.uid,
+                                otherUserId: user.id,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
             );
-          },
-        );
-      },
-    );
   }
 }
 

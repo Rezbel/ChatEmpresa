@@ -27,37 +27,34 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _getUserNames() async {
-    // Consultar los nombres de ambos usuarios desde la colección `users`
     DocumentSnapshot currentUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('usuarios')
         .doc(widget.currentUserId)
         .get();
     DocumentSnapshot otherUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('usuarios')
         .doc(widget.otherUserId)
         .get();
 
     setState(() {
-      currentUserName = currentUserSnapshot['name'];
-      otherUserName = otherUserSnapshot['name'];
+      currentUserName = currentUserSnapshot['username'];
+      otherUserName = otherUserSnapshot['username'];
     });
   }
 
   String getChatId() {
-    // Asegurarse de que ambos nombres estén disponibles antes de generar el chatId
-    if (currentUserName == null || otherUserName == null) return '';
-    
-    List<String> names = [currentUserName!, otherUserName!];
-    names.sort();
-    return names.join("_"); // chatId basado en los nombres
+    if (widget.currentUserId.isEmpty || widget.otherUserId.isEmpty) return '';
+    List<String> ids = [widget.currentUserId, widget.otherUserId];
+    ids.sort();
+    return ids.join('_');
   }
 
   Future<void> sendMessage(String message) async {
-    if (currentUserName == null) return; // Esperar a que el nombre esté disponible
+    if (message.isEmpty) return;
 
     String chatId = getChatId();
     await FirebaseFirestore.instance.collection('chats').doc(chatId).collection('messages').add({
-      'sender': currentUserName, // Usar el nombre en lugar del ID
+      'senderId': widget.currentUserId,
       'message': message,
       'timestamp': FieldValue.serverTimestamp(),
     });
@@ -94,7 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     var message = messages[index];
-                    bool isSentByCurrentUser = message['sender'] == currentUserName;
+                    bool isSentByCurrentUser = message['senderId'] == widget.currentUserId;
                     return Align(
                       alignment: isSentByCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
@@ -105,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          '${message['message']}', // Mostrar el nombre del remitente
+                          message['message'] ?? 'Mensaje vacío',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),

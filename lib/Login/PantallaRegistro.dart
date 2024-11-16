@@ -41,12 +41,13 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
         password: _passwordController.text,
       );
 
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      await _firestore.collection('usuarios').doc(userCredential.user!.uid).set({
         'email': _emailController.text,
         'name': _nameController.text,
         'surname': _surnameController.text,
         'username': _usernameController.text,
-        'role': _roleController.text, // Asignar el rol al nuevo usuario
+        'role': _roleController.text,
+        'password': _passwordController.text
       });
 
       // Navegar a la pantalla de login

@@ -29,11 +29,11 @@ class _PAChatScreenState extends State<PAChatScreen> {
   Future<void> _getUserNames() async {
     // Consultar los nombres de ambos usuarios desde la colección `users`
     DocumentSnapshot currentUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('usuarios')
         .doc(widget.currentUserId)
         .get();
     DocumentSnapshot otherUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('usuarios')
         .doc(widget.otherUserId)
         .get();
 

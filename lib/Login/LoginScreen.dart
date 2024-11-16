@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final User? user = userCredential.user;
     final DocumentSnapshot userDoc =
-        await _firestore.collection('users').doc(user!.uid).get();
+        await _firestore.collection('usuarios').doc(user!.uid).get();
     final role = userDoc['role'];
 
     if (mounted) {
