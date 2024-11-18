@@ -8,15 +8,15 @@ class PantallaRegistro extends StatefulWidget {
 }
 
 class _PantallaRegistroState extends State<PantallaRegistro> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final TextEditingController _correoController = TextEditingController();
-  final TextEditingController _contrasenaController = TextEditingController();
-  final TextEditingController _confirmarcontrasenaController =
-      TextEditingController();
-  final TextEditingController _nombreController = TextEditingController();
-  final TextEditingController _apellidosController = TextEditingController();
-  final TextEditingController _usuarioController = TextEditingController();
-// Para el rol del usuario
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController(); // Para el rol del usuario
   bool _isLoading = false;
 
   Future<void> _register() async {
@@ -25,7 +25,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
     });
 
     // Verificar que las contraseñas coincidan
-    if (_contrasenaController.text != _confirmarcontrasenaController.text) {
+    if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Las contraseñas no coinciden.'),
       ));
@@ -36,21 +36,18 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
     }
 
     try {
-      String nombreUsuario = _usuarioController.text;
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _correoController.text,
-        password: _contrasenaController.text,
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
       );
 
-      await _firestore.collection('usuarios').doc(nombreUsuario).set({
-        'correo': _correoController.text,
-        'nombre': _nombreController.text,
-        'apellido': _apellidosController.text,
-        'usuario': nombreUsuario,
-        'rol': '',
-        'contrasena': _confirmarcontrasenaController.text,
-        'uid': userCredential.user!.uid, // Agregar el UID del usuario
+      await _firestore.collection('usuarios').doc(userCredential.user!.uid).set({
+        'email': _emailController.text,
+        'name': _nameController.text,
+        'surname': _surnameController.text,
+        'username': _usernameController.text,
+        'role': _roleController.text,
+        'password': _passwordController.text
       });
 
       // Navegar a la pantalla de login
@@ -73,8 +70,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
       backgroundColor: Color(0xFF282828),
       appBar: AppBar(
         backgroundColor: Color(0xFF282828),
-        iconTheme: IconThemeData(
-          color: Colors.white,
+        iconTheme: IconThemeData( color: Colors.white,
         ),
       ),
       body: SingleChildScrollView(
@@ -93,6 +89,8 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
                 ),
               ),
               SizedBox(height: 40),
+              
+              // Formulario de registro
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -104,8 +102,8 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
                   children: [
                     // Campo de correo electrónico
                     TextField(
-                      controller: _correoController,
-                      decoration: const InputDecoration(
+                      controller: _emailController,
+                      decoration: InputDecoration(
                         labelText: 'Correo electrónico',
                         labelStyle: TextStyle(
                           color: Colors.black,
@@ -117,7 +115,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de contraseña
                     TextField(
-                      controller: _contrasenaController,
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Contraseña',
                         labelStyle: TextStyle(
@@ -131,7 +129,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de confirmar contraseña
                     TextField(
-                      controller: _confirmarcontrasenaController,
+                      controller: _confirmPasswordController,
                       decoration: InputDecoration(
                         labelText: 'Confirmar contraseña',
                         labelStyle: TextStyle(
@@ -145,7 +143,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de nombre
                     TextField(
-                      controller: _nombreController,
+                      controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Nombre',
                         labelStyle: TextStyle(
@@ -158,7 +156,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de apellido
                     TextField(
-                      controller: _apellidosController,
+                      controller: _surnameController,
                       decoration: InputDecoration(
                         labelText: 'Apellido',
                         labelStyle: TextStyle(
@@ -171,9 +169,22 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de nombre de usuario
                     TextField(
-                      controller: _usuarioController,
+                      controller: _usernameController,
                       decoration: InputDecoration(
                         labelText: 'Usuario',
+                        labelStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // Campo de rol
+                    TextField(
+                      controller: _roleController,
+                      decoration: InputDecoration(
+                        labelText: 'Rol (administrador/empleado)',
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -192,8 +203,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(color: Colors.white)
-                            : Text('Registrar',
-                                style: TextStyle(color: Colors.white)),
+                            : Text('Registrar', style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ],

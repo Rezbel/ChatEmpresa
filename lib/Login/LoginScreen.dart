@@ -1,6 +1,7 @@
 import 'package:chatempresa/Administrador/PABottomNavigation.dart';
 import 'package:chatempresa/Empleado/BottomNavigation.dart';
 import 'package:chatempresa/Login/PantallaRegistro.dart';
+import 'package:chatempresa/Empleado/PantallaChat.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,12 +12,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController _correoController = TextEditingController();
-  final TextEditingController _contrasenaController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _seeText = true;
 
   Future<void> _login() async {
   setState(() {
@@ -24,47 +24,24 @@ class _LoginScreenState extends State<LoginScreen> {
   });
 
   try {
-    // Iniciar sesión con Firebase Authentication
     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-      email: _correoController.text,
-      password: _contrasenaController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
     );
 
-    User? user= userCredential.user;
+    final User? user = userCredential.user;
+    final DocumentSnapshot userDoc =
+        await _firestore.collection('usuarios').doc(user!.uid).get();
+    final role = userDoc['role'];
 
-    // Obtener el correo del usuario autenticado
-    String correo = _correoController.text;
-
-    // Buscar el usuario por correo electrónico en Firestore
-    final QuerySnapshot userQuery = await _firestore
-        .collection('usuarios')
-        .where('correo', isEqualTo: correo)
-        .limit(1) // Limitar la consulta a un solo documento
-        .get();
-
-    if (userQuery.docs.isNotEmpty) {
-      final userDoc = userQuery.docs.first;
-      final role = userDoc['rol'];
-
-      // Navegar a la pantalla correspondiente según el rol
-      if (mounted) {
-        if (role == 'administrador') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => PABottomnavigation()),
-          );
-        } else if (role == 'empleado') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Bottomnavigation()),
-          );
-        }
+    if (mounted) {
+      if (role == 'administrador') {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => PABottomnavigation()));
+      } else if (role == 'empleado') {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Bottomnavigation()));
       }
-    } else {
-      // El usuario no tiene un rol asignado o no existe en Firestore
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Usuario no encontrado en Firestore."),
-      ));
     }
   } on FirebaseAuthException catch (e) {
     String errorMessage;
@@ -84,6 +61,8 @@ class _LoginScreenState extends State<LoginScreen> {
       default:
         errorMessage = 'Algo salió mal';
     }
+    // Mostrar mensaje de error específico en el SnackBar
+    print('Error al iniciar sesión: $e');
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(errorMessage),
     ));
@@ -96,128 +75,114 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF282828),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/logo.png', // Ruta de la imagen
-                width: 325,
-                height: 325,
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Color(0xFF282828),
+    body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/logo.png', // Ruta de la imagen
+              width: 325, // Ajusta el tamaño de la imagen
+              height: 325,
+            ),
+            SizedBox(height: 20),
+            Text(
+              'BATER PAPO',
+              style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
-              SizedBox(height: 20),
-              Text(
-                'BATER PAPO',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+            ),
+            SizedBox(height: 40),
+            
+            // Formulario de inicio de sesión
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
               ),
-              SizedBox(height: 40),
-              
-              // Formulario de inicio de sesión
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _correoController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        labelStyle: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Campo de usuario
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo electrónico',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 25,
                       ),
                     ),
-                    SizedBox(height: 16),
-                    
-                    TextField(
-                      controller: _contrasenaController,
-                      decoration: InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        suffix: IconButton(
-                          icon: Icon(
-                            _seeText ? Icons.visibility_off : Icons.visibility,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _seeText = !_seeText;
-                            });
-                          },
-                        ),
-                        labelText: 'Contraseña',
-                        labelStyle: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                        ),
-                      ),
-                      obscureText: _seeText,
-                    ),
-                    SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () {
-                        // Acción para recuperar contraseña
-                      },
-                      child: Text(
-                        '¿Olvidaste tu contraseña?',
-                        style: TextStyle(
-                          color: Colors.black,
-                          decoration: TextDecoration.underline,
-                        ),
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Campo de contraseña
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 25,
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black87,
-                        ),
-                        child: _isLoading
-                            ? CircularProgressIndicator(color: Colors.white)
-                            : Text('Iniciar sesión', style: TextStyle(color: Colors.white)),
-                      ),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      // Acción para recuperar contraseña
+                    },
+                    child: Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(color: Colors.black,
+                      decoration: TextDecoration.underline,),
                     ),
-                  ],
+                  ),
+                  // Botón de inicio de sesión
+                  SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black87, // Color del botón
+                      ),
+                      child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text('Iniciar sesión', style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            SizedBox(height: 20),
+            // Enlace de "¿Olvidaste tu contraseña?"
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PantallaRegistro()), // Navegar a la pantalla de registro
+                );
+              },
+              child: Text('¿No tienes cuenta? Regístrate',
+              style: TextStyle(color: Colors.white
                 ),
               ),
-              
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PantallaRegistro()),
-                  );
-                },
-                child: Text(
-                  '¿No tienes cuenta? Regístrate',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
+}
+
