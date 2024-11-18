@@ -38,13 +38,13 @@ class _LoginScreenState extends State<LoginScreen> {
     // Buscar el usuario por correo electrónico en Firestore
     final QuerySnapshot userQuery = await _firestore
         .collection('usuarios')
-        .where('correo', isEqualTo: correo)
+        .where('email', isEqualTo: correo)
         .limit(1) // Limitar la consulta a un solo documento
         .get();
 
     if (userQuery.docs.isNotEmpty) {
       final userDoc = userQuery.docs.first;
-      final role = userDoc['rol'];
+      final role = userDoc['role'];
 
       // Navegar a la pantalla correspondiente según el rol
       if (mounted) {
