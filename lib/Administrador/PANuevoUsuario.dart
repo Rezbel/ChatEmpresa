@@ -13,15 +13,15 @@ class _PANuevoUsuarioState extends State<PANuevoUsuario> {
 
   // Función para actualizar el rol del usuario
   Future<void> _updateUserRole(String userId, String role) async {
-    await _firestore.collection('usuarios').doc(userId).update({'rol': role});
+    await _firestore.collection('usuarios').doc(userId).update({'role': role});
   }
 
   // Construye un ListTile para cada usuario
   Widget _buildListTile(DocumentSnapshot user) {
     var userId = user.id;
-    var nombreapellido = '${user['nombre']} ${user['apellido']}';
-    var usuario = user['usuario'];
-    var rolusuario = user['rol']; // Cambiado 'role' a 'rol' para que coincida con Firestore
+    var nombreapellido = '${user['name']} ${user['surname']}';
+    var usuario = user['username'];
+    var rolusuario = user['role']; // Cambiado 'role' a 'rol' para que coincida con Firestore
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),

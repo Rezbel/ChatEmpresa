@@ -1,7 +1,6 @@
 import 'package:chatempresa/Administrador/PABottomNavigation.dart';
 import 'package:chatempresa/Empleado/BottomNavigation.dart';
 import 'package:chatempresa/Login/PantallaRegistro.dart';
-import 'package:chatempresa/Empleado/PantallaChat.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _seeText = false;
 
   Future<void> _login() async {
   setState(() {
@@ -125,16 +125,28 @@ Widget build(BuildContext context) {
                   
                   // Campo de contraseña
                   TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontSize: 25,
-                      ),
-                    ),
-                    obscureText: true,
-                  ),
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        suffix: IconButton(
+                          icon: Icon(
+                            _seeText ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            setState(() {});
+                          },
+                        ),
+                        labelText: 'Contraseña',
+                        labelStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 25,
+                        ),
+                        )
+                        )
+                        ,
                   SizedBox(height: 16),
                   TextButton(
                     onPressed: () {

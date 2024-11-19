@@ -50,7 +50,8 @@ class _PantallachatState extends State<Pantallachat> {
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('usuarios').snapshots(),
+              stream:
+                  FirebaseFirestore.instance.collection('usuarios').snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
@@ -64,20 +65,23 @@ class _PantallachatState extends State<Pantallachat> {
                   itemBuilder: (context, index) {
                     var user = users[index];
                     return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE6EFFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
                         leading: const CircleAvatar(
                           backgroundColor: Colors.grey,
                           child: Icon(Icons.person, color: Colors.white),
                         ),
                         title: Text(
                           user['username'],
-                          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         subtitle: StreamBuilder<QuerySnapshot>(
                           stream: FirebaseFirestore.instance
@@ -88,14 +92,16 @@ class _PantallachatState extends State<Pantallachat> {
                               .limit(1)
                               .snapshots(),
                           builder: (context, chatSnapshot) {
-                            if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
+                            if (!chatSnapshot.hasData ||
+                                chatSnapshot.data!.docs.isEmpty) {
                               return const Text(
                                 'No hay mensajes',
                                 style: TextStyle(color: Colors.black54),
                               );
                             }
                             var lastMessage = chatSnapshot.data!.docs.first;
-                            String messageText = lastMessage['message'] ?? 'Mensaje vacío';
+                            String messageText =
+                                lastMessage['message'] ?? 'Mensaje vacío';
                             return Text(
                               messageText,
                               style: const TextStyle(color: Colors.black54),
@@ -112,17 +118,27 @@ class _PantallachatState extends State<Pantallachat> {
                               .limit(1)
                               .snapshots(),
                           builder: (context, chatSnapshot) {
-                            if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
+                            if (!chatSnapshot.hasData ||
+                                chatSnapshot.data!.docs.isEmpty) {
                               return const Text(
                                 'Sin mensajes',
                                 style: TextStyle(color: Colors.black54),
                               );
                             }
                             var lastMessage = chatSnapshot.data!.docs.first;
-                            var timestamp = lastMessage['timestamp'] as Timestamp;
-                            var date = timestamp.toDate();
-                            return Text(
-                              '${date.hour}:${date.minute}',
+
+                            // Verificar si 'timestamp' existe y no es null usando el operador ?.
+                            var timestamp =
+                                lastMessage['timestamp'] as Timestamp?;
+                            if (timestamp != null) {
+                              var date = timestamp.toDate();
+                              return Text(
+                                '${date.hour}:${date.minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(color: Colors.black54),
+                              );
+                            }
+                            return const Text(
+                              'Hora no disponible',
                               style: TextStyle(color: Colors.black54),
                             );
                           },
