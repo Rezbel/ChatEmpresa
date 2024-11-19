@@ -180,18 +180,7 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
                     ),
                     SizedBox(height: 16),
 
-                    // Campo de rol
-                    TextField(
-                      controller: _roleController,
-                      decoration: InputDecoration(
-                        labelText: 'Rol (administrador/empleado)',
-                        labelStyle: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
+                  
 
                     // Botón de registrar
                     SizedBox(

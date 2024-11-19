@@ -1,4 +1,5 @@
 import 'package:chatempresa/Administrador/ChatsList.dart';
+import 'package:chatempresa/Administrador/Grupolist.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -87,54 +88,13 @@ class _PAPantallachatState extends State<PAPantallachat> {
             ),
           ),
           Expanded(
-            child: showChats ? ChatsList(currentUser: currentUser) : GruposList(),
-          ),
+  child: showChats 
+      ? ChatsList(currentUser: currentUser) 
+      : GruposList(currentUserId: currentUser?.uid ?? ''),
+),
+
         ],
       ),
-    );
-  }
-}
-
-
-
-
-class GruposList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // Aquí agregas el contenido de la pantalla de grupos
-    return ListView.builder(
-      itemCount: 10, // Reemplazar con la cantidad real de grupos
-      itemBuilder: (context, index) {
-        return Container(
-          margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0), // Añadir márgenes para separación
-          decoration: BoxDecoration(
-            color: Color(0xFFE6EFFF), // Color de fondo de la cajita de mensaje
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            leading: CircleAvatar(
-              backgroundColor: Colors.grey,
-              child: Icon(Icons.group, color: Colors.white),
-            ),
-            title: Text(
-              'Grupo ${index + 1}', // Reemplazar con el nombre del grupo real
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              'Último mensaje del grupo...',
-              style: TextStyle(color: Colors.black54),
-            ),
-            trailing: Text(
-              'Hora',
-              style: TextStyle(color: Colors.black54),
-            ),
-            onTap: () {
-              // Agregar lógica de navegación al chat del grupo
-            },
-          ),
-        );
-      },
     );
   }
 }

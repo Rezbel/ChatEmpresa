@@ -92,10 +92,7 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
     );
   }
 
-
-
-
-  Future<void> crearProyecto(String nombre, List<String> usuarios, DateTime fechaLimite) async {
+Future<void> crearProyecto(String nombre, List<String> usuarios, DateTime fechaLimite) async {
   final proyectosRef = FirebaseFirestore.instance.collection('proyectos');
   final nuevoProyecto = Proyecto(
     id: proyectosRef.doc().id,
@@ -104,14 +101,27 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
     fechaLimite: fechaLimite,
   );
 
+  // Guardar el proyecto en Firestore
   await proyectosRef.doc(nuevoProyecto.id).set(nuevoProyecto.toMap());
 
-  // Crear grupo de chat automáticamente
+  // Crear grupo de chat automáticamente con usuarios
   await FirebaseFirestore.instance.collection('grupos').doc(nuevoProyecto.id).set({
     'nombre': nuevoProyecto.nombre,
     'usuarios': usuarios,
     'fechaCreacion': DateTime.now().toIso8601String(),
+    'mensajes': [], // Inicializamos un campo vacío para los mensajes
   });
+
+  // Agregar los usuarios al grupo
+  for (String usuarioId in usuarios) {
+    await FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(usuarioId)
+        .update({
+          'grupos': FieldValue.arrayUnion([nuevoProyecto.id]),
+        });
+  }
 }
+
 }
 
