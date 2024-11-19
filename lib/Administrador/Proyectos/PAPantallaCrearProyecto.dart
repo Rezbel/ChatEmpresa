@@ -1,4 +1,4 @@
-import 'package:chatempresa/Proyectos/Proyecto.dart';
+import 'package:chatempresa/Administrador/Proyectos/Proyecto.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -114,3 +114,4 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
   });
 }
 }
+

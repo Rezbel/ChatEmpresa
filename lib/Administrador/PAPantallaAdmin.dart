@@ -1,4 +1,5 @@
 import 'package:chatempresa/Administrador/PANuevoUsuario.dart';
+import 'package:chatempresa/Administrador/Proyectos/PAPantallaCrearProyecto.dart';
 import 'package:flutter/material.dart';
 
 class PAPantallaAdmin extends StatelessWidget {
@@ -56,7 +57,7 @@ class PAPantallaAdmin extends StatelessWidget {
               label: 'Crear proyecto',
               onTap: () {
                 // Navegación sin destino especificado
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Placeholder()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => PAPantallaCrearProyecto()));
               },
             ),
           ],
