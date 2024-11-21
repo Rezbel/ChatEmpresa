@@ -3,15 +3,44 @@ import 'package:chatempresa/Administrador/Proyectos/ProyectoCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class PAPantallaproyectos extends StatelessWidget {
+class PAPantallaproyectos extends StatefulWidget {
   const PAPantallaproyectos({super.key});
 
-  Future<List<Proyecto>> fetchProjects() async {
-    final querySnapshot =
-        await FirebaseFirestore.instance.collection('proyectos').get();
-    return querySnapshot.docs
+  @override
+  _PAPantallaproyectosState createState() => _PAPantallaproyectosState();
+}
+
+class _PAPantallaproyectosState extends State<PAPantallaproyectos> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Proyecto> _allProjects = [];
+  List<Proyecto> _filteredProjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProjects();
+  }
+
+  Future<void> _fetchProjects() async {
+    final querySnapshot = await FirebaseFirestore.instance.collection('proyectos').get();
+    List<Proyecto> projects = querySnapshot.docs
         .map((doc) => Proyecto.fromMap(doc.data()))
         .toList();
+    setState(() {
+      _allProjects = projects;
+      _filteredProjects = projects;
+    });
+  }
+
+  // Función para filtrar los proyectos por el inicio del nombre
+  void _filterProjects(String query) {
+    final filtered = _allProjects.where((project) {
+      // Filtrar solo si el nombre comienza con el texto ingresado
+      return project.nombre.toLowerCase().startsWith(query.toLowerCase());
+    }).toList();
+    setState(() {
+      _filteredProjects = filtered;
+    });
   }
 
   @override
@@ -36,18 +65,28 @@ class PAPantallaproyectos extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Aquí se envuelve el cuerpo para hacerlo desplazable
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
             TextField(
+              controller: _searchController,
+              onChanged: _filterProjects, // Filtrar proyectos mientras se escribe
               decoration: InputDecoration(
                 hintText: 'Buscar...',
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
@@ -59,40 +98,24 @@ class PAPantallaproyectos extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
             const SizedBox(height: 8),
-            FutureBuilder<List<Proyecto>>(
-              future: fetchProjects(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'Error al cargar proyectos',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-                  return Center(
+            // Muestra los proyectos filtrados
+            _filteredProjects.isEmpty
+                ? const Center(
                     child: Text(
                       'No hay proyectos activos',
                       style: TextStyle(color: Colors.white),
                     ),
-                  );
-                } else {
-                  final projects = snapshot.data!;
-                  return GridView.count(
+                  )
+                : GridView.count(
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    children: projects.map((project) {
+                    children: _filteredProjects.map((project) {
                       return ProjectCard(project: project);
                     }).toList(),
-                  );
-                }
-              },
-            ),
+                  ),
           ],
         ),
       ),

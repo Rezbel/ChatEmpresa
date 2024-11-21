@@ -21,7 +21,7 @@ class _PANuevoUsuarioState extends State<PANuevoUsuario> {
     var userId = user.id;
     var nombreapellido = '${user['name']} ${user['surname']}';
     var usuario = user['username'];
-    var rolusuario = user['role']; // Cambiado 'role' a 'rol' para que coincida con Firestore
+    var rolusuario = user['role'];
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -36,16 +36,16 @@ class _PANuevoUsuarioState extends State<PANuevoUsuario> {
           children: [
             Text(
               nombreapellido,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             Text(
               usuario,
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             const SizedBox(height: 10),
             Text(
               'Rol actual: $rolusuario',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: Colors.black),
             ),
             const SizedBox(height: 15),
             Row(
@@ -56,14 +56,14 @@ class _PANuevoUsuarioState extends State<PANuevoUsuario> {
                     _updateUserRole(userId, 'administrador');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.black87,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
-                    shadowColor: Colors.blueAccent,
-                    elevation: 10,
+                    shadowColor: Colors.black,
+                    elevation: 5,
                   ),
                   child: Text('Administrador'),
                 ),
@@ -72,14 +72,14 @@ class _PANuevoUsuarioState extends State<PANuevoUsuario> {
                     _updateUserRole(userId, 'empleado');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.black87,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
-                    shadowColor: Colors.greenAccent,
-                    elevation: 10,
+                    shadowColor: Colors.black,
+                    elevation: 5,
                   ),
                   child: Text('Empleado'),
                 ),
@@ -95,11 +95,14 @@ class _PANuevoUsuarioState extends State<PANuevoUsuario> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF282828),  // Fondo oscuro
       appBar: AppBar(
-        backgroundColor: Color(0xFF282828),
-        iconTheme: IconThemeData( color: Colors.white),
-        title: Text('Empleados',
-        style: TextStyle(fontSize: 20, color: Colors.white)),
+        backgroundColor: Color(0xFF282828),  // Fondo de la AppBar oscuro
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          'Empleados',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
       body: StreamBuilder(
         // Cambiado el nombre de la colección a 'usuarios' para coincidir con Firestore
