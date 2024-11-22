@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,6 +11,8 @@ class PANuevoUsuario extends StatefulWidget {
 
 class _PANuevoUsuarioState extends State<PANuevoUsuario> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   // Función para actualizar el rol del usuario
   Future<void> _updateUserRole(String userId, String role) async {
@@ -112,7 +115,10 @@ class _PANuevoUsuarioState extends State<PANuevoUsuario> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          var users = snapshot.data!.docs;
+            var users = snapshot.data!.docs.where((user) {
+            return user.id != currentUser!.uid; 
+          }).toList();
+
 
           return ListView.builder(
             itemCount: users.length,
