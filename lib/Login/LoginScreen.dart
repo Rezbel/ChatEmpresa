@@ -85,8 +85,8 @@ Widget build(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/logo.png', // Ruta de la imagen
-              width: 325, // Ajusta el tamaño de la imagen
+              'assets/logo.png',
+              width: 325,
               height: 325,
             ),
             SizedBox(height: 20),

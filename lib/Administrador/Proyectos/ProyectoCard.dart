@@ -8,40 +8,36 @@ class ProjectCard extends StatelessWidget {
 
   const ProjectCard({required this.project});
 
-  Future<double> _calcularProgreso(String projectId) async {
-    try {
-      final subtareasSnapshot = await FirebaseFirestore.instance
-          .collection('proyectos')
-          .doc(projectId)
-          .collection('subtareas')
-          .get();
+  Stream<double> _obtenerProgreso(String projectId) {
+    return FirebaseFirestore.instance
+        .collection('proyectos')
+        .doc(projectId)
+        .collection('subtareas')
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) return 0.0;
 
-      if (subtareasSnapshot.docs.isEmpty) return 0.0;
-
-      final totalSubtareas = subtareasSnapshot.docs.length;
-      final completadas = subtareasSnapshot.docs.where((doc) {
+      final totalSubtareas = snapshot.docs.length;
+      final completadas = snapshot.docs.where((doc) {
         final data = doc.data() as Map<String, dynamic>;
-        return data['estado'] == 'completada';
+        return data['estado'] == 'entregada';
       }).length;
 
       return completadas / totalSubtareas;
-    } catch (e) {
-      print('Error al calcular progreso: $e');
-      return 0.0;
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navegar a la nueva pantalla de subtareas
+        // Navegar a la pantalla de subtareas
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SubtareasScreen(
               projectId: project.id,
-              usuariosDelProyecto: project.usuarios, // Pasamos la lista de usuarios del proyecto
+              usuariosDelProyecto: project.usuarios,
             ),
           ),
         );
@@ -77,8 +73,8 @@ class ProjectCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Fecha límite: ${project.fechaLimite.toLocal()}'),
             const SizedBox(height: 8),
-            FutureBuilder<double>(
-              future: _calcularProgreso(project.id),
+            StreamBuilder<double>(
+              stream: _obtenerProgreso(project.id),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const LinearProgressIndicator(

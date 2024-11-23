@@ -39,7 +39,7 @@ class SubtareasScreen extends StatelessWidget {
         title: const Text('Asignaciones'),
       ),
       body: FutureBuilder<Map<String, String>>(
-        future: _cargarUsuarios(), // Cargar nombres de usuarios
+        future: _cargarUsuarios(),
         builder: (context, snapshotUsuarios) {
           if (snapshotUsuarios.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -51,86 +51,144 @@ class SubtareasScreen extends StatelessWidget {
 
           final mapaUsuarios = snapshotUsuarios.data!;
 
-          return Column(
-            children: [
-              Expanded(
-                child: FutureBuilder<QuerySnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('proyectos')
-                      .doc(projectId)
-                      .collection('subtareas')
-                      .get(),
-                  builder: (context, snapshotSubtareas) {
-                    if (snapshotSubtareas.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshotSubtareas.hasError) {
-                      return const Center(
-                        child: Text('Error al cargar subtareas'),
-                      );
-                    } else if (snapshotSubtareas.data == null ||
-                        snapshotSubtareas.data!.docs.isEmpty) {
-                      return const Center(
-                        child: Text('No hay subtareas asignadas'),
-                      );
-                    }
+          return FutureBuilder<QuerySnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('proyectos')
+                .doc(projectId)
+                .collection('subtareas')
+                .get(),
+            builder: (context, snapshotSubtareas) {
+              if (snapshotSubtareas.connectionState ==
+                  ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshotSubtareas.hasError) {
+                return const Center(
+                  child: Text('Error al cargar subtareas'),
+                );
+              } else if (snapshotSubtareas.data == null ||
+                  snapshotSubtareas.data!.docs.isEmpty) {
+                return const Center(
+                  child: Text('No hay subtareas asignadas'),
+                );
+              }
 
-                    final subtareas = snapshotSubtareas.data!.docs;
+              final subtareas = snapshotSubtareas.data!.docs;
 
-                    return ListView.builder(
-                      itemCount: subtareas.length,
-                      itemBuilder: (context, index) {
-                        final subtarea =
-                            subtareas[index].data() as Map<String, dynamic>;
-                        final subtareaId = subtareas[index].id;
-                        final usuarioAsignadoId =
-                            subtarea['usuarioAsignado'] ?? '';
-                        final usuarioAsignado =
-                            mapaUsuarios[usuarioAsignadoId] ??
-                                'Usuario desconocido';
+              // Dividir las subtareas en entregadas y no entregadas
+              final subtareasEntregadas = subtareas
+                  .where((doc) =>
+                      (doc.data() as Map<String, dynamic>)['estado'] ==
+                      'entregada')
+                  .toList();
+              final subtareasNoEntregadas = subtareas
+                  .where((doc) =>
+                      (doc.data() as Map<String, dynamic>)['estado'] !=
+                      'entregada')
+                  .toList();
 
-                        return ListTile(
-                          title: Text(subtarea['nombre']),
-                          subtitle: Text('Asignado a: $usuarioAsignado'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetallesSubtareaScreen(
-                                  subtarea: subtarea,
-                                  usuarioAsignado: usuarioAsignado,
-                                  projectId: projectId,
-                                  subtareaId: subtareaId,
-                                ),
-                              ),
-                            );
-                          },
+              return ListView(
+                children: [
+                  // Lista de subtareas no entregadas
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Subtareas Pendientes',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ...subtareasNoEntregadas.map((subtareaDoc) {
+                    final subtarea =
+                        subtareaDoc.data() as Map<String, dynamic>;
+                    final subtareaId = subtareaDoc.id;
+                    final usuarioAsignadoId =
+                        subtarea['usuarioAsignado'] ?? '';
+                    final usuarioAsignado =
+                        mapaUsuarios[usuarioAsignadoId] ??
+                            'Usuario desconocido';
+
+                    return ListTile(
+                      title: Text(subtarea['nombre']),
+                      subtitle: Text('Asignado a: $usuarioAsignado'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetallesSubtareaScreen(
+                              subtarea: subtarea,
+                              usuarioAsignado: usuarioAsignado,
+                              projectId: projectId,
+                              subtareaId: subtareaId,
+                            ),
+                          ),
                         );
                       },
                     );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CrearSubtareaScreen(
-                          projectId: projectId,
-                          usuariosDelProyecto: usuariosDelProyecto,
-                        ),
+                  }).toList(),
+                  // Lista de subtareas entregadas
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Subtareas Entregadas',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                  ),
+                  ...subtareasEntregadas.map((subtareaDoc) {
+                    final subtarea =
+                        subtareaDoc.data() as Map<String, dynamic>;
+                    final subtareaId = subtareaDoc.id;
+                    final usuarioAsignadoId =
+                        subtarea['usuarioAsignado'] ?? '';
+                    final usuarioAsignado =
+                        mapaUsuarios[usuarioAsignadoId] ??
+                            'Usuario desconocido';
+
+                    return ListTile(
+                      title: Text(subtarea['nombre']),
+                      subtitle: Text('Asignado a: $usuarioAsignado'),
+                      trailing: const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetallesSubtareaScreen(
+                              subtarea: subtarea,
+                              usuarioAsignado: usuarioAsignado,
+                              projectId: projectId,
+                              subtareaId: subtareaId,
+                            ),
+                          ),
+                        );
+                      },
                     );
-                  },
-                  child: const Text('Crear Subtarea'),
-                ),
-              ),
-            ],
+                  }).toList(),
+                ],
+              );
+            },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CrearSubtareaScreen(
+                projectId: projectId,
+                usuariosDelProyecto: usuariosDelProyecto,
+              ),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

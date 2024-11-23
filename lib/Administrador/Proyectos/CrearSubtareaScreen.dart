@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class CrearSubtareaScreen extends StatefulWidget {
   final String projectId;
-  final List<String> usuariosDelProyecto; // IDs de los usuarios seleccionados
+  final List<String> usuariosDelProyecto; 
 
   const CrearSubtareaScreen({
     required this.projectId,
