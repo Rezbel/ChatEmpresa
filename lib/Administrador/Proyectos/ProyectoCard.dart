@@ -31,7 +31,6 @@ class ProjectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navegar a la pantalla de subtareas
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -69,9 +68,19 @@ class ProjectCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text('Usuarios: ${project.usuarios.length}'),
+            Text(
+              'Usuarios: ${project.usuarios.length}',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: const TextStyle(fontSize: 14),
+            ),
             const SizedBox(height: 8),
-            Text('Fecha límite: ${project.fechaLimite.toLocal()}'),
+            Text(
+              'Fecha límite: ${project.fechaLimite.toLocal()}',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: const TextStyle(fontSize: 14),
+            ),
             const SizedBox(height: 8),
             StreamBuilder<double>(
               stream: _obtenerProgreso(project.id),
@@ -100,6 +109,7 @@ class ProjectCard extends StatelessWidget {
                       Text(
                         'Progreso: ${(progreso * 100).toStringAsFixed(0)}%',
                         style: const TextStyle(fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   );
