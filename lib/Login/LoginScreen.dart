@@ -111,8 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     // Campo de usuario
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: InputDecoration(focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                         labelText: 'Correo electrónico',
                         labelStyle: TextStyle(
                           color: Colors.black,
@@ -124,6 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     
                     // Campo de contraseña
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _passwordController,
                       obscureText: !_seeText,  // Esta línea oculta el texto
                       decoration: InputDecoration(

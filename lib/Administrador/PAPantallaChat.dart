@@ -74,6 +74,7 @@ class _PAPantallachatState extends State<PAPantallachat> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: TextField(
+              cursorColor: Colors.black,
               decoration: InputDecoration(
                 hintText: 'Buscar...',
                 filled: true,

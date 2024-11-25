@@ -72,6 +72,7 @@ class _PAPantallaproyectosState extends State<PAPantallaproyectos> {
           children: [
             const SizedBox(height: 8),
             TextField(
+              cursorColor: Colors.black,
               controller: _searchController,
               onChanged: _filterProjects, // Filtrar proyectos mientras se escribe
               decoration: InputDecoration(

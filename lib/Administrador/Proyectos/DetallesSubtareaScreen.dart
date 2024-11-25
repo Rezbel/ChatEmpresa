@@ -99,93 +99,228 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final fechaLimite = widget.subtarea['fechaLimite'];
-    return Scaffold(
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Color(0xFF282828),
+    appBar: AppBar(
       backgroundColor: Color(0xFF282828),
-      appBar: AppBar(
-        backgroundColor: Color(0xFF282828),
-        iconTheme: IconThemeData(color: Colors.white),
-        title: const Text('Detalles de la Asignación', style: TextStyle(color: Colors.white)),
+      iconTheme: IconThemeData(color: Colors.white),
+      title: const Text('Detalles de la Asignación', style: TextStyle(color: Colors.white)),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.edit, color: Colors.white),
+          onPressed: () => _mostrarDialogoEditar(context),
+        ),
+      ],
+    ),
+    body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Nombre: ${widget.subtarea['nombre']}',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Descripción:',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Text(
+            widget.subtarea['descripcion'] ?? 'Sin descripción',
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Fecha Límite:',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Text(
+            widget.subtarea['fechaLimite'] != null
+                ? DateFormat('dd/MM/yy').format(DateTime.parse(widget.subtarea['fechaLimite']))
+                : 'Sin fecha límite',
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Asignado a:',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Text(
+            widget.usuarioAsignado,
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          SizedBox(height: 16),
+          if (widget.subtarea['archivoUrl'] != null &&
+              (widget.subtarea['archivoUrl'] as List).isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Archivos adjuntos:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                ...((widget.subtarea['archivoUrl'] as List).map((url) => InkWell(
+                      onTap: () {
+                        // Puedes usar cualquier biblioteca para abrir enlaces
+                      },
+                      child: Text(
+                        url,
+                        style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                      ),
+                    ))),
+              ],
+            ),
+          SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: _adjuntarArchivo,
+            icon: Icon(Icons.attach_file, color: Colors.black),
+            label: Text(_cargandoArchivo ? 'Subiendo...' : 'Adjuntar archivo', style: TextStyle(color: Colors.black)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+            ),
+          ),
+          SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: _cambiarEstadoSubtarea,
+            icon: Icon(_esEntregada ? Icons.undo : Icons.check, color: Colors.black),
+            label: Text(_esEntregada ? 'Desmarcar como entregada' : 'Marcar como entregada', style: TextStyle(color: Colors.black)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nombre: ${widget.subtarea['nombre']}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Descripción:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            Text(
-              widget.subtarea['descripcion'] ?? 'Sin descripción',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Fecha Límite:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            Text(
-              fechaLimite != null ? DateFormat('dd/MM/yy').format(DateTime.parse(fechaLimite)) : 'Sin fecha límite',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Asignado a:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            Text(
-              widget.usuarioAsignado,
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-            SizedBox(height: 16),
-            if (widget.subtarea['archivoUrl'] != null &&
-                (widget.subtarea['archivoUrl'] as List).isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    ),
+  );
+}
+
+void _mostrarDialogoEditar(BuildContext context) {
+  final _nombreController = TextEditingController(text: widget.subtarea['nombre']);
+  final _descripcionController = TextEditingController(text: widget.subtarea['descripcion']);
+  DateTime? _fechaLimite = widget.subtarea['fechaLimite'] != null
+      ? DateTime.parse(widget.subtarea['fechaLimite'])
+      : null;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Color(0xFF282828), // Fondo oscuro
+            title: Text('Editar Subtarea', style: TextStyle(color: Colors.white)),
+            content: SingleChildScrollView(
+              child: Column(
                 children: [
-                  Text(
-                    'Archivos adjuntos:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  TextField(
+                    controller: _nombreController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Nombre',
+                      labelStyle: TextStyle(color: Colors.white),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
                   ),
-                  ...((widget.subtarea['archivoUrl'] as List).map((url) => InkWell(
-                        onTap: () {
-                          // Puedes usar cualquier biblioteca para abrir enlaces
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: _descripcionController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Descripción',
+                      labelStyle: TextStyle(color: Colors.white),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    maxLines: 3,
+                  ),
+                  SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () async {
+                      DateTime? fechaSeleccionada = await showDatePicker(
+                        context: context,
+                        initialDate: _fechaLimite ?? DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
+                        builder: (context, child) {
+                          return Theme(
+                            data: ThemeData.dark().copyWith(
+                              colorScheme: ColorScheme.dark(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                surface: Colors.black,
+                                onSurface: Colors.white,
+                              ),
+                              dialogBackgroundColor: Colors.black,
+                            ),
+                            child: child!,
+                          );
                         },
-                        child: Text(
-                          url,
-                          style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                        ),
-                      ))),
+                      );
+                      if (fechaSeleccionada != null) {
+                        setState(() {
+                          _fechaLimite = fechaSeleccionada;
+                        });
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white),
+                      ),
+                      child: Text(
+                        _fechaLimite != null
+                            ? 'Fecha Límite: ${DateFormat('dd/MM/yy').format(_fechaLimite!)}'
+                            : 'Seleccionar Fecha Límite',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _adjuntarArchivo,
-              icon: Icon(Icons.attach_file, color: Colors.black),
-              label: Text(_cargandoArchivo ? 'Subiendo...' : 'Adjuntar archivo', style: TextStyle(color: Colors.black)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-              ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _cambiarEstadoSubtarea,
-              icon: Icon(_esEntregada ? Icons.undo : Icons.check, color: Colors.black),
-              label: Text(_esEntregada ? 'Desmarcar como entregada' : 'Marcar como entregada', style: TextStyle(color: Colors.black)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cancelar', style: TextStyle(color: Colors.white)),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+              TextButton(
+                onPressed: () {
+                  FirebaseFirestore.instance
+                      .collection('proyectos')
+                      .doc(widget.projectId)
+                      .collection('subtareas')
+                      .doc(widget.subtareaId)
+                      .update({
+                    'nombre': _nombreController.text,
+                    'descripcion': _descripcionController.text,
+                    'fechaLimite': _fechaLimite?.toIso8601String(),
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Guardar', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 }

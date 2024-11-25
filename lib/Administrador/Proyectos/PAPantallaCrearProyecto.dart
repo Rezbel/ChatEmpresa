@@ -95,6 +95,7 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
+                    cursorColor: Colors.black,
                     controller: _nombreController,
                     decoration: InputDecoration(
                       labelText: 'Nombre del Proyecto',
@@ -106,6 +107,7 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
                   ),
                   SizedBox(height: 16),
                   TextField(
+                    cursorColor: Colors.black,
                     controller: _descripcionController,
                     maxLines: 3,
                     decoration: InputDecoration(

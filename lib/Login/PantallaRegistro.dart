@@ -102,8 +102,11 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
                   children: [
                     // Campo de correo electrónico
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: InputDecoration(focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                         labelText: 'Correo electrónico',
                         labelStyle: TextStyle(
                           color: Colors.black,
@@ -115,8 +118,11 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de contraseña
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _passwordController,
-                      decoration: InputDecoration(
+                      decoration: InputDecoration(focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                         labelText: 'Contraseña',
                         labelStyle: TextStyle(
                           color: Colors.black,
@@ -129,8 +135,11 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de confirmar contraseña
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _confirmPasswordController,
-                      decoration: InputDecoration(
+                      decoration: InputDecoration(focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                         labelText: 'Confirmar contraseña',
                         labelStyle: TextStyle(
                           color: Colors.black,
@@ -143,9 +152,12 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de nombre
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Nombre',
+                      decoration: InputDecoration(focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        labelText: 'Nombre(s)',
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -156,9 +168,12 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de apellido
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _surnameController,
-                      decoration: InputDecoration(
-                        labelText: 'Apellido',
+                      decoration: InputDecoration(focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        labelText: 'Apellidos',
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -169,9 +184,12 @@ class _PantallaRegistroState extends State<PantallaRegistro> {
 
                     // Campo de nombre de usuario
                     TextField(
+                      cursorColor: Colors.black,
                       controller: _usernameController,
-                      decoration: InputDecoration(
-                        labelText: 'Usuario',
+                      decoration: InputDecoration(focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        labelText: 'Nombre de usuario',
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 20,

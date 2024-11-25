@@ -54,6 +54,130 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
     }
   }
 
+  void _mostrarDialogoEditar(BuildContext context, Map<String, dynamic> proyecto) {
+  final _nombreController = TextEditingController(text: proyecto['nombre']);
+  final _descripcionController = TextEditingController(text: proyecto['descripcion']);
+  DateTime? _fechaLimite = proyecto['fechaLimite'] != null
+      ? DateTime.parse(proyecto['fechaLimite'])
+      : null;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Color(0xFF282828), // Fondo oscuro
+            title: Text('Editar Proyecto', style: TextStyle(color: Colors.white)),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _nombreController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Nombre',
+                      labelStyle: TextStyle(color: Colors.white),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: _descripcionController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Descripción',
+                      labelStyle: TextStyle(color: Colors.white),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    maxLines: 3,
+                  ),
+                  SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () async {
+                      DateTime? fechaSeleccionada = await showDatePicker(
+                        context: context,
+                        initialDate: _fechaLimite ?? DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
+                        builder: (context, child) {
+                          return Theme(
+                            data: ThemeData.dark().copyWith(
+                              colorScheme: ColorScheme.dark(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                surface: Colors.black,
+                                onSurface: Colors.white,
+                              ),
+                              dialogBackgroundColor: Colors.black,
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+                      if (fechaSeleccionada != null) {
+                        setState(() {
+                          _fechaLimite = fechaSeleccionada;
+                        });
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white),
+                      ),
+                      child: Text(
+                        'Fecha Límite: ${DateFormat('dd/MM/yy').format(_fechaLimite!)}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cancelar', style: TextStyle(color: Colors.white)),
+              ),
+              TextButton(
+                onPressed: () {
+                  FirebaseFirestore.instance
+                      .collection('proyectos')
+                      .doc(widget.projectId)
+                      .update({
+                    'nombre': _nombreController.text,
+                    'descripcion': _descripcionController.text,
+                    'fechaLimite': _fechaLimite?.toIso8601String(),
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Guardar', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +186,24 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
         backgroundColor: Color(0xFF282828),
         iconTheme: IconThemeData(color: Colors.white),
         title: Text('Asignaciones', style: TextStyle(color: Colors.white)),
+        actions: [
+          FutureBuilder<Map<String, dynamic>>(
+            future: _cargarProyecto(),
+            builder: (context, snapshotProyecto) {
+              if (snapshotProyecto.connectionState == ConnectionState.waiting) {
+                return Container();
+              } else if (snapshotProyecto.hasError || !snapshotProyecto.hasData) {
+                return Container();
+              }
+
+              final proyecto = snapshotProyecto.data!;
+              return IconButton(
+                icon: Icon(Icons.edit, color: Colors.white),
+                onPressed: () => _mostrarDialogoEditar(context, proyecto),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _cargarProyecto(),
@@ -151,12 +293,12 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
                               : DateTime(2100); // Fecha muy lejana en el futuro si no hay fecha límite
                           DateTime fechaB = (b.data() as Map<String, dynamic>)['fechaLimite'] != null 
                               ? DateTime.parse((b.data() as Map<String, dynamic>)['fechaLimite']) 
-                               : DateTime(2100); // Fecha muy lejana en el futuro si no hay fecha límite
-                           return fechaA.compareTo(fechaB);
-                          });
+                              : DateTime(2100); // Fecha muy lejana en el futuro si no hay fecha límite
+                          return fechaA.compareTo(fechaB);
+                        });
 
                         subtareasEntregadas.sort((a, b) {
-                          DateTime fechaA = (a.data() as Map<String, dynamic>)['fechaLimite'] != null 
+                                                    DateTime fechaA = (a.data() as Map<String, dynamic>)['fechaLimite'] != null 
                               ? DateTime.parse((a.data() as Map<String, dynamic>)['fechaLimite']) 
                               : DateTime(2100); // Fecha muy lejana en el futuro si no hay fecha límite
                           DateTime fechaB = (b.data() as Map<String, dynamic>)['fechaLimite'] != null 
@@ -164,7 +306,6 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
                               : DateTime(2100); // Fecha muy lejana en el futuro si no hay fecha límite
                           return fechaB.compareTo(fechaA); // Ordenar al revés
                         });
-
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
