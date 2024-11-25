@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
 
 class PAChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -19,6 +23,7 @@ class _PAChatScreenState extends State<PAChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   String? currentUserName;
   String? otherUserName;
+  File? _selectedFile;
 
   @override
   void initState() {
@@ -50,14 +55,24 @@ class _PAChatScreenState extends State<PAChatScreen> {
   }
 
   Future<void> sendMessage(String message) async {
-    if (message.isEmpty) return;
+    if (message.isEmpty && _selectedFile == null) return;
 
     String chatId = getChatId();
+
     await FirebaseFirestore.instance.collection('chats').doc(chatId).collection('messages').add({
       'senderId': widget.currentUserId,
       'message': message,
       'timestamp': FieldValue.serverTimestamp(),
     });
+  }
+
+  Future<void> selectFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      setState(() {
+        _selectedFile = File(result.files.single.path!);
+      });
+    }
   }
 
   @override
@@ -66,9 +81,16 @@ class _PAChatScreenState extends State<PAChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat con $otherUserName'),
-        backgroundColor: Color(0xFF282828),
+        title: Row(
+          children: [
+            Icon(Icons.person, color: Colors.white),
+            SizedBox(width: 8),
+            Text('$otherUserName'),
+          ],
+        ),
+        backgroundColor: Color(0xFF6B6B6B),
       ),
+      backgroundColor: Color(0xFF282828),
       body: Column(
         children: [
           Expanded(
@@ -98,12 +120,27 @@ class _PAChatScreenState extends State<PAChatScreen> {
                         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: isSentByCurrentUser ? Colors.blue : Colors.grey,
+                          color: isSentByCurrentUser ? Color(0xFF6B6B6B) : Color(0xFFE6EFFF),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(
-                          message['message'] ?? 'Mensaje vacío',
-                          style: TextStyle(color: Colors.white),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (message['message'] != null && message['message'].isNotEmpty)
+                              GestureDetector(
+                                onTap: () {
+                                  final text = message['message'];
+                                  if (text.contains('.com')) {
+                                    final url = 'https://${text.trim()}';
+                                    launch(url);
+                                  }
+                                },
+                                child: Text(
+                                  message['message'] ?? '',
+                                  style: TextStyle(color: Colors.black, decoration: message['message'].contains('.com') ? TextDecoration.underline : TextDecoration.none),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     );
@@ -119,25 +156,38 @@ class _PAChatScreenState extends State<PAChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
+                    maxLines: 5,
+                    minLines: 1,
                     decoration: InputDecoration(
-                      hintText: 'Escribe un mensaje...',
+                      hintText: 'Escribe un mensaje...', hintStyle: TextStyle(color: Colors.black),
                       filled: true,
-                      fillColor: Colors.grey[800],
+                      fillColor: Color(0xFFE6EFFF),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.attach_file, color: Colors.black),
+                            onPressed: () {
+                              // Placeholder: button does not perform any action for now
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.send, color: Colors.black),
+                            onPressed: () {
+                              if (_messageController.text.isNotEmpty) {
+                                sendMessage(_messageController.text);
+                                _messageController.clear();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send, color: Colors.blue),
-                  onPressed: () {
-                    if (_messageController.text.isNotEmpty) {
-                      sendMessage(_messageController.text);
-                      _messageController.clear();
-                    }
-                  },
                 ),
               ],
             ),
