@@ -55,7 +55,7 @@ class ProjectCard extends StatelessWidget {
                 const Icon(
                   Icons.flutter_dash,
                   size: 30,
-                  color: Colors.blue,
+                  color: Colors.black,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -102,8 +102,8 @@ class ProjectCard extends StatelessWidget {
                       LinearProgressIndicator(
                         value: progreso,
                         minHeight: 10,
-                        backgroundColor: Colors.grey[300],
-                        color: Colors.blue,
+                        backgroundColor: Colors.white,
+                        color: Colors.black,
                       ),
                       const SizedBox(height: 4),
                       Text(

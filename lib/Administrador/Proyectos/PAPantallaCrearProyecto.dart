@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; // Para el formateo de la fecha
 
 class PAPantallaCrearProyecto extends StatefulWidget {
   @override
@@ -8,12 +9,13 @@ class PAPantallaCrearProyecto extends StatefulWidget {
 
 class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
   final _nombreController = TextEditingController();
+  final _descripcionController = TextEditingController();
   DateTime? _fechaLimite;
   List<String> _usuariosSeleccionados = [];
   bool _isLoading = false;
 
   Future<void> _crearProyecto() async {
-    if (_nombreController.text.isEmpty || _fechaLimite == null) {
+    if (_nombreController.text.isEmpty || _fechaLimite == null || _descripcionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Por favor completa todos los campos.')),
       );
@@ -31,12 +33,14 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
       await proyectosRef.doc(nuevoProyectoId).set({
         'id': nuevoProyectoId,
         'nombre': _nombreController.text,
+        'descripcion': _descripcionController.text,
         'usuarios': _usuariosSeleccionados,
         'fechaLimite': _fechaLimite!.toIso8601String(),
       });
 
       await FirebaseFirestore.instance.collection('grupos').doc(nuevoProyectoId).set({
         'nombre': _nombreController.text,
+        'descripcion': _descripcionController.text,
         'usuarios': _usuariosSeleccionados,
         'fechaCreacion': DateTime.now().toIso8601String(),
         'mensajes': [],
@@ -71,18 +75,16 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
       appBar: AppBar(
         backgroundColor: Color(0xFF282828),
         iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+              'Crear Proyecto',
+              style: TextStyle(fontSize: 30, color: Colors.white),
+            ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(25.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
-            Text(
-              'Crear Proyecto',
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            SizedBox(height: 40),
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -96,7 +98,19 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
                     controller: _nombreController,
                     decoration: InputDecoration(
                       labelText: 'Nombre del Proyecto',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 16),
+                      focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black), // Borde de las cajas de texto
+          ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: _descripcionController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: 'Descripción del Proyecto',
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 16),
                       focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.black), // Borde de las cajas de texto
           ),
@@ -140,12 +154,18 @@ class _PAPantallaCrearProyectoState extends State<PAPantallaCrearProyecto> {
                         Text(
                           _fechaLimite == null
                               ? 'Seleccionar Fecha Límite'
-                              : 'Fecha Límite: ${_fechaLimite!.toLocal()}'.split(' ')[0],
+                              : 'Modificar Fecha Límite',
                           style: TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
                   ),
+                  SizedBox(height: 8),
+                  if (_fechaLimite != null)
+                    Text(
+                      'Fecha Límite: ${DateFormat('dd/MM/yy').format(_fechaLimite!)}',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
                   SizedBox(height: 16),
                   Text(
                     'Seleccionar Usuarios',

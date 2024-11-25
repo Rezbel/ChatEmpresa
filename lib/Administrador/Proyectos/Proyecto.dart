@@ -3,12 +3,14 @@ class Proyecto {
   String nombre;
   List<String> usuarios; // IDs de los usuarios
   DateTime fechaLimite;
+  String descripcion;
 
   Proyecto({
     required this.id,
     required this.nombre,
     required this.usuarios,
     required this.fechaLimite,
+    required this.descripcion,
   });
 
   Map<String, dynamic> toMap() {
@@ -17,17 +19,17 @@ class Proyecto {
       'nombre': nombre,
       'usuarios': usuarios,
       'fechaLimite': fechaLimite.toIso8601String(),
+      'descripcion': descripcion,
     };
   }
 
   factory Proyecto.fromMap(Map<String, dynamic> map) {
     return Proyecto(
-      id: map['id'],
-      nombre: map['nombre'],
-      usuarios: List<String>.from(map['usuarios']),
-      fechaLimite: DateTime.parse(map['fechaLimite']),
+      id: map['id'] ?? '',
+      nombre: map['nombre'] ?? '',
+      usuarios: List<String>.from(map['usuarios'] ?? []),
+      fechaLimite: map['fechaLimite'] != null ? DateTime.parse(map['fechaLimite']) : DateTime.now(),
+      descripcion: map['descripcion'] ?? '', // Proveer valor predeterminado si es null
     );
   }
 }
-
-

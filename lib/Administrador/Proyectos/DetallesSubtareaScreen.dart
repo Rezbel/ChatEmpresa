@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; // Para el formateo de la fecha
 
 class DetallesSubtareaScreen extends StatefulWidget {
   final Map<String, dynamic> subtarea;
@@ -24,6 +25,13 @@ class DetallesSubtareaScreen extends StatefulWidget {
 class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
   String? _archivoSeleccionado;
   bool _cargandoArchivo = false;
+  bool _esEntregada = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _esEntregada = widget.subtarea['estado'] == 'entregada';
+  }
 
   Future<void> _adjuntarArchivo() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -66,32 +74,39 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
     }
   }
 
-  Future<void> _marcarComoEntregada() async {
+  Future<void> _cambiarEstadoSubtarea() async {
+    String nuevoEstado = _esEntregada ? 'pendiente' : 'entregada';
     try {
       await FirebaseFirestore.instance
           .collection('proyectos')
           .doc(widget.projectId)
           .collection('subtareas')
           .doc(widget.subtareaId)
-          .update({'estado': 'entregada'});
+          .update({'estado': nuevoEstado});
+
+      setState(() {
+        _esEntregada = !_esEntregada;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Subtarea marcada como entregada.')),
+        SnackBar(content: Text('Subtarea marcada como $nuevoEstado.')),
       );
-
-      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al marcar como entregada: $e')),
+        SnackBar(content: Text('Error al cambiar el estado: $e')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final fechaLimite = widget.subtarea['fechaLimite'];
     return Scaffold(
+      backgroundColor: Color(0xFF282828),
       appBar: AppBar(
-        title: Text('Detalles de la Asignación'),
+        backgroundColor: Color(0xFF282828),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: const Text('Detalles de la Asignación', style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -100,25 +115,34 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
           children: [
             Text(
               'Nombre: ${widget.subtarea['nombre']}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             SizedBox(height: 16),
             Text(
               'Descripción:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             Text(
               widget.subtarea['descripcion'] ?? 'Sin descripción',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Fecha Límite:',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            Text(
+              fechaLimite != null ? DateFormat('dd/MM/yy').format(DateTime.parse(fechaLimite)) : 'Sin fecha límite',
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             SizedBox(height: 16),
             Text(
               'Asignado a:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             Text(
               widget.usuarioAsignado,
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             SizedBox(height: 16),
             if (widget.subtarea['archivoUrl'] != null &&
@@ -128,7 +152,7 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                 children: [
                   Text(
                     'Archivos adjuntos:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   ...((widget.subtarea['archivoUrl'] as List).map((url) => InkWell(
                         onTap: () {
@@ -144,14 +168,20 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
             SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _adjuntarArchivo,
-              icon: Icon(Icons.attach_file),
-              label: Text(_cargandoArchivo ? 'Subiendo...' : 'Adjuntar archivo'),
+              icon: Icon(Icons.attach_file, color: Colors.black),
+              label: Text(_cargandoArchivo ? 'Subiendo...' : 'Adjuntar archivo', style: TextStyle(color: Colors.black)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
             ),
             SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: _marcarComoEntregada,
-              icon: Icon(Icons.check),
-              label: Text('Marcar como entregada'),
+              onPressed: _cambiarEstadoSubtarea,
+              icon: Icon(_esEntregada ? Icons.undo : Icons.check, color: Colors.black),
+              label: Text(_esEntregada ? 'Desmarcar como entregada' : 'Marcar como entregada', style: TextStyle(color: Colors.black)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
             ),
           ],
         ),
