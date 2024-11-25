@@ -1,11 +1,32 @@
 import 'package:chatempresa/Administrador/PANuevoUsuario.dart';
 import 'package:chatempresa/Administrador/Proyectos/PAPantallaCrearProyecto.dart';
+import 'package:chatempresa/Login/LoginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PAPantallaAdmin extends StatelessWidget {
   const PAPantallaAdmin({super.key});
 
-@override
+  void _signOut(BuildContext context) async {
+  await FirebaseAuth.instance.signOut();
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginScreen()),
+  );
+}
+
+
+  void _openMeetingLink() async {
+    const url = 'https://meet.google.com/landing';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'No se pudo abrir el enlace $url';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black87,
@@ -14,13 +35,28 @@ class PAPantallaAdmin extends StatelessWidget {
           'Bater Papo',
           style: TextStyle(fontSize: 30, color: Colors.white),
         ),
-        backgroundColor: Color(0xFF282828),
+        backgroundColor: const Color(0xFF282828),
         elevation: 0,
         actions: [
-          IconButton(
+          PopupMenuButton<String>(
+            onSelected: (String value) {
+              if (value == 'Cerrar sesión') {
+                _signOut(context);
+              } else if (value == 'Agendar reunión') {
+                _openMeetingLink();
+              }
+            },
             icon: const Icon(Icons.more_vert),
-            color: Colors.white,
-            onPressed: () {},
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'Cerrar sesión',
+                child: Text('Cerrar sesión'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Agendar reunión',
+                child: Text('Agendar reunión'),
+              ),
+            ],
           ),
         ],
       ),

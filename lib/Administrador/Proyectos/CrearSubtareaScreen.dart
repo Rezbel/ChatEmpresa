@@ -19,7 +19,7 @@ class _CrearSubtareaScreenState extends State<CrearSubtareaScreen> {
   final _nombreController = TextEditingController();
   final _descripcionController = TextEditingController();
   String? _usuarioAsignado;
-  Map<String, String> _mapaUsuarios = {}; // UID -> Username
+  Map<String, String> _mapaUsuarios = {};
   bool _isLoadingUsuarios = true;
 
   @override
