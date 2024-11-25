@@ -173,19 +173,35 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
   }
 
   void _sendMessage(String message) async {
-    if (_currentUser == null) return;
+  if (_currentUser == null) return;
 
-    final messageData = {
-      'message': message,
-      'senderId': _currentUser!.uid,
-      'senderName': _currentUser!.displayName ?? 'Usuario',
-      'timestamp': FieldValue.serverTimestamp(),
-    };
+  // Cargar datos del usuario actual desde Firestore
+  final userDoc = await FirebaseFirestore.instance
+      .collection('usuarios')
+      .doc(_currentUser!.uid)
+      .get();
 
-    await FirebaseFirestore.instance
-        .collection('grupos')
-        .doc(widget.groupId)
-        .collection('mensajes')
-        .add(messageData);
+  if (!userDoc.exists) {
+    print("Usuario no encontrado en Firestore");
+    return;
   }
+
+  final userData = userDoc.data() as Map<String, dynamic>;
+  final senderName = userData['username'] ?? 'Usuario';
+
+  final messageData = {
+    'message': message,
+    'senderId': _currentUser!.uid,
+    'senderName': senderName, // Ahora usa el username desde Firestore
+    'timestamp': FieldValue.serverTimestamp(),
+  };
+
+  // Guardar el mensaje en la colección 'mensajes'
+  await FirebaseFirestore.instance
+      .collection('grupos')
+      .doc(widget.groupId)
+      .collection('mensajes')
+      .add(messageData);
+}
+
 }

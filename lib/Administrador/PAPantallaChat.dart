@@ -1,5 +1,5 @@
-import 'package:chatempresa/Administrador/ChatsList.dart';
-import 'package:chatempresa/Administrador/Grupolist.dart';
+import 'package:chatempresa/Administrador/ChatsAdmin/ChatsList.dart';
+import 'package:chatempresa/Administrador/ChatsAdmin/Grupolist.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -71,23 +71,7 @@ class _PAPantallachatState extends State<PAPantallachat> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                hintText: 'Buscar...',
-                filled: true,
-                fillColor: Color(0xFFE6EFFF),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                prefixIcon: Icon(Icons.search, color: Colors.black),
-                hintStyle: TextStyle(color: Colors.black),
-              ),
-            ),
-          ),
+        
           Expanded(
   child: showChats 
       ? ChatsList(currentUser: currentUser) 

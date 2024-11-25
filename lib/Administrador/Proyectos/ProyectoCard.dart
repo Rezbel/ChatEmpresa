@@ -27,6 +27,17 @@ class ProjectCard extends StatelessWidget {
     });
   }
 
+  Future<void> _actualizarEstadoProyecto(String projectId, String estado) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('proyectos')
+          .doc(projectId)
+          .update({'estado': estado});
+    } catch (e) {
+      print('Error al actualizar el estado del proyecto: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -52,10 +63,14 @@ class ProjectCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(
-                  Icons.flutter_dash,
+                Icon(
+                  project.estado == 'finalizado'
+                      ? Icons.check_circle
+                      : Icons.flutter_dash,
                   size: 30,
-                  color: Colors.black,
+                  color: project.estado == 'finalizado'
+                      ? Colors.green
+                      : Colors.black,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -87,7 +102,7 @@ class ProjectCard extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const LinearProgressIndicator(
-                    value: null, // Indeterminate progress
+                    value: null,
                   );
                 } else if (snapshot.hasError) {
                   return const Text(
@@ -96,6 +111,10 @@ class ProjectCard extends StatelessWidget {
                   );
                 } else {
                   final progreso = snapshot.data ?? 0.0;
+                  final esFinalizado = progreso == 1.0;
+                  _actualizarEstadoProyecto(
+                      project.id, esFinalizado ? 'finalizado' : 'pendiente');
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

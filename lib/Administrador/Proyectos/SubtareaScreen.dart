@@ -257,12 +257,12 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     SizedBox(height: 16),
-                    FutureBuilder<QuerySnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('proyectos')
-                          .doc(widget.projectId)
-                          .collection('subtareas')
-                          .get(),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+      .collection('proyectos')
+      .doc(widget.projectId)
+      .collection('subtareas')
+      .snapshots(), // Escucha en tiempo real
                       builder: (context, snapshotSubtareas) {
                         if (snapshotSubtareas.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
