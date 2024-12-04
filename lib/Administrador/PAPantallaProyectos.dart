@@ -32,21 +32,21 @@ class _PAPantallaproyectosState extends State<PAPantallaproyectos> {
       },
     );
   }
-  void _signOut(BuildContext context) async {
-  await FirebaseAuth.instance.signOut();
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginScreen()),
-  );
-}
 
+  void _signOut(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
 
   void _openMeetingLink() async {
     const url = 'https://meet.google.com/landing';
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
     } else {
-      throw 'No se pudo abrir el enlace $url';
+      print('No se puede abrir la URL xd $url');
     }
   }
 

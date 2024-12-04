@@ -1,3 +1,5 @@
 {
-    "cmake.sourceDirectory": "C:/Users/eduar/OneDrive/Documentos/PROYECTOS_FLUTTER/ChatEmpresa/linux"
+    "cmake.sourceDirectory": "C:/Users/eduar/OneDrive/Documentos/PROYECTOS_FLUTTER/ChatEmpresa/linux",
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cmake.ignoreCMakeListsMissing": true
 }

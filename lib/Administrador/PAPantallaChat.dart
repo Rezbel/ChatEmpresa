@@ -1,5 +1,5 @@
 import 'package:chatempresa/Administrador/ChatsAdmin/ChatsList.dart';
-import 'package:chatempresa/Administrador/ChatsAdmin/Grupolist.dart';
+import 'package:chatempresa/Administrador/ChatsAdmin/PAGruposList.dart';
 import 'package:chatempresa/Login/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,20 +17,19 @@ class _PAPantallachatState extends State<PAPantallachat> {
   bool showChats = true;
 
   void _signOut(BuildContext context) async {
-  await FirebaseAuth.instance.signOut();
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginScreen()),
-  );
-}
-
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
 
   void _openMeetingLink() async {
     const url = 'https://meet.google.com/landing';
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrl(Uri.parse(url))) {
+      launchUrl(Uri.parse(url));
     } else {
-      throw 'No se pudo abrir el enlace $url';
+      print('No se puede abrir la URL xd');
     }
   }
 
@@ -83,12 +82,12 @@ class _PAPantallachatState extends State<PAPantallachat> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: showChats ? Colors.white : Colors.grey,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Chats',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -98,7 +97,7 @@ class _PAPantallachatState extends State<PAPantallachat> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: showChats ? Colors.grey : Colors.white,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Grupos',
                     style: TextStyle(color: Colors.black),
                   ),
@@ -106,13 +105,11 @@ class _PAPantallachatState extends State<PAPantallachat> {
               ],
             ),
           ),
-        
           Expanded(
-  child: showChats 
-      ? ChatsList(currentUser: currentUser) 
-      : GruposList(currentUserId: currentUser?.uid ?? ''),
-),
-
+            child: showChats
+                ? PAChatsList(currentUser: currentUser)
+                : PAGruposList(currentUserId: currentUser?.uid ?? ''),
+          ),
         ],
       ),
     );

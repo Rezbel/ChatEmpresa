@@ -1,6 +1,7 @@
-import 'package:chatempresa/Empleado/PantallaChat.dart';
+import 'package:chatempresa/Administrador/ChatsAdmin/ChatsList.dart';
 import 'package:chatempresa/Empleado/PantallaGrupos.dart';
 import 'package:chatempresa/Empleado/PantallaProyectos.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Bottomnavigation extends StatefulWidget {
@@ -12,13 +13,20 @@ class Bottomnavigation extends StatefulWidget {
 
 class _BottomnavigationState extends State<Bottomnavigation> {
   int _selectedIndex = 0; // Índice de la pantalla actual.
+  late final User? currentUser; // Usuario autenticado.
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser; // Obtener usuario actual.
+  }
 
   // Lista de pantallas para la navegación.
-  final List<Widget> _screens = [
-    Pantallachat(),       // Pantalla de Chats.
-    PantallaGrupos(),   // Pantalla de Grupos.
-    Pantallaproyectos() // Pantalla de Proyectos.
-  ];
+  List<Widget> get _screens => [
+        PAChatsList(currentUser: currentUser), // Pasar usuario a PAChatsList.
+        const PantallaGrupos(), // Pantalla de Grupos.
+        const Pantallaproyectos(), // Pantalla de Proyectos.
+      ];
 
   // Cambia el índice de la pantalla seleccionada.
   void _onItemTapped(int index) {
@@ -32,12 +40,14 @@ class _BottomnavigationState extends State<Bottomnavigation> {
     return Scaffold(
       body: _screens[_selectedIndex], // Muestra la pantalla actual.
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[850], // Fondo oscuro para la barra de navegación.
+        backgroundColor:
+            Colors.grey[850], // Fondo oscuro para la barra de navegación.
         selectedItemColor: Colors.white, // Color del ítem seleccionado.
-        unselectedItemColor: Colors.grey, // Color de los ítems no seleccionados.
+        unselectedItemColor:
+            Colors.grey, // Color de los ítems no seleccionados.
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble), // Icono para "Chats".
             label: 'Chats',

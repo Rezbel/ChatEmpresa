@@ -2,16 +2,16 @@ import 'package:chatempresa/Administrador/ChatsAdmin/GrupoChatScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class GruposList extends StatefulWidget {
+class PAGruposList extends StatefulWidget {
   final String currentUserId;
 
-  GruposList({required this.currentUserId});
+  const PAGruposList({super.key, required this.currentUserId});
 
   @override
-  _GruposListState createState() => _GruposListState();
+  _PAGruposListState createState() => _PAGruposListState();
 }
 
-class _GruposListState extends State<GruposList> {
+class _PAGruposListState extends State<PAGruposList> {
   String searchQuery = "";
 
   @override
@@ -26,13 +26,13 @@ class _GruposListState extends State<GruposList> {
             decoration: InputDecoration(
               hintText: 'Buscar...',
               filled: true,
-              fillColor: Color(0xFFE6EFFF),
+              fillColor: const Color(0xFFE6EFFF),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
-              prefixIcon: Icon(Icons.search, color: Colors.black),
-              hintStyle: TextStyle(color: Colors.black),
+              prefixIcon: const Icon(Icons.search, color: Colors.black),
+              hintStyle: const TextStyle(color: Colors.black),
             ),
             onChanged: (value) {
               setState(() {
@@ -49,7 +49,7 @@ class _GruposListState extends State<GruposList> {
                 .where('usuarios', arrayContains: widget.currentUserId)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) return CircularProgressIndicator();
+              if (!snapshot.hasData) return const CircularProgressIndicator();
 
               final grupos = snapshot.data!.docs.where((doc) {
                 final groupName =
@@ -58,7 +58,8 @@ class _GruposListState extends State<GruposList> {
               }).toList();
 
               if (grupos.isEmpty) {
-                return Center(child: Text('No se encontraron resultados.'));
+                return const Center(
+                    child: Text('No se encontraron resultados.'));
               }
 
               return ListView.builder(
@@ -68,24 +69,25 @@ class _GruposListState extends State<GruposList> {
                       grupos[index].data() as Map<String, dynamic>;
 
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 8.0),
                     decoration: BoxDecoration(
-                      color: Color(0xFFE6EFFF),
+                      color: const Color(0xFFE6EFFF),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 16.0),
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                         backgroundColor: Colors.grey,
                         child: Icon(Icons.group, color: Colors.white),
                       ),
                       title: Text(
                         grupoData['nombre'] ?? 'Grupo',
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(
+                      subtitle: const Text(
                         'Último mensaje...',
                         style: TextStyle(color: Colors.black54),
                       ),

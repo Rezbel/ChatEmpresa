@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart'; 
+import 'package:url_launcher/url_launcher.dart';
 
 class DetallesSubtareaScreen extends StatefulWidget {
   final Map<String, dynamic> subtarea;
@@ -13,6 +13,7 @@ class DetallesSubtareaScreen extends StatefulWidget {
   final String subtareaId;
 
   const DetallesSubtareaScreen({
+    super.key,
     required this.subtarea,
     required this.usuarioAsignado,
     required this.projectId,
@@ -62,7 +63,7 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Archivo subido correctamente.')),
+          const SnackBar(content: Text('Archivo subido correctamente.')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -75,13 +76,15 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
       }
     }
   }
-   // Función para abrir la URL
+
+  // Función para abrir la URL
   Future<void> _abrirArchivo(String url) async {
-    // Abre el archivo en el navegador o app compatible
-    if (await canLaunch(url)) {
-      await launch(url);
+    // String urlAux = url.replaceFirst('https://', '');
+    String urlAux = url;
+    if (await canLaunchUrl(Uri.parse(urlAux))) {
+      await launchUrl(Uri.parse(urlAux));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No se puede abrir el archivo.')));
+      print('No se puede abrir la URL xd');
     }
   }
 
@@ -112,15 +115,15 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF282828),
+      backgroundColor: const Color(0xFF282828),
       appBar: AppBar(
-        backgroundColor: Color(0xFF282828),
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xFF282828),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Detalles de la Asignación',
             style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: Colors.white),
+            icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () => _mostrarDialogoEditar(context),
           ),
         ],
@@ -132,13 +135,13 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
           children: [
             Text(
               'Nombre: ${widget.subtarea['nombre']}',
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Descripción:',
               style: TextStyle(
                   fontSize: 16,
@@ -147,10 +150,10 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
             ),
             Text(
               widget.subtarea['descripcion'] ?? 'Sin descripción',
-              style: TextStyle(fontSize: 16, color: Colors.white),
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Fecha Límite:',
               style: TextStyle(
                   fontSize: 16,
@@ -162,10 +165,10 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                   ? DateFormat('dd/MM/yy')
                       .format(DateTime.parse(widget.subtarea['fechaLimite']))
                   : 'Sin fecha límite',
-              style: TextStyle(fontSize: 16, color: Colors.white),
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Asignado a:',
               style: TextStyle(
                   fontSize: 16,
@@ -174,15 +177,15 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
             ),
             Text(
               widget.usuarioAsignado,
-              style: TextStyle(fontSize: 16, color: Colors.white),
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (widget.subtarea['archivoUrl'] != null &&
                 (widget.subtarea['archivoUrl'] as List).isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Archivos adjuntos:',
                     style: TextStyle(
                         fontSize: 16,
@@ -191,27 +194,27 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                   ),
                   ...((widget.subtarea['archivoUrl'] as List)
                       .map((url) => InkWell(
-                             onTap: () => _abrirArchivo(url),
+                            onTap: () => _abrirArchivo(url),
                             child: Text(
                               url,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.blue,
                                   decoration: TextDecoration.underline),
                             ),
                           ))),
                 ],
               ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _adjuntarArchivo,
-              icon: Icon(Icons.attach_file, color: Colors.black),
+              icon: const Icon(Icons.attach_file, color: Colors.black),
               label: Text(_cargandoArchivo ? 'Subiendo...' : 'Adjuntar archivo',
-                  style: TextStyle(color: Colors.black)),
+                  style: const TextStyle(color: Colors.black)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _cambiarEstadoSubtarea,
               icon: Icon(_esEntregada ? Icons.undo : Icons.check,
@@ -220,7 +223,7 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                   _esEntregada
                       ? 'Desmarcar como entregada'
                       : 'Marcar como entregada',
-                  style: TextStyle(color: Colors.black)),
+                  style: const TextStyle(color: Colors.black)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
               ),
@@ -232,11 +235,11 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
   }
 
   void _mostrarDialogoEditar(BuildContext context) {
-    final _nombreController =
+    final nombreController =
         TextEditingController(text: widget.subtarea['nombre']);
-    final _descripcionController =
+    final descripcionController =
         TextEditingController(text: widget.subtarea['descripcion']);
-    DateTime? _fechaLimite = widget.subtarea['fechaLimite'] != null
+    DateTime? fechaLimite = widget.subtarea['fechaLimite'] != null
         ? DateTime.parse(widget.subtarea['fechaLimite'])
         : null;
 
@@ -246,16 +249,16 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: Color(0xFF282828), // Fondo oscuro
-              title: Text('Editar Subtarea',
+              backgroundColor: const Color(0xFF282828), // Fondo oscuro
+              title: const Text('Editar Subtarea',
                   style: TextStyle(color: Colors.white)),
               content: SingleChildScrollView(
                 child: Column(
                   children: [
                     TextField(
-                      controller: _nombreController,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      controller: nombreController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         labelText: 'Nombre',
                         labelStyle: TextStyle(color: Colors.white),
                         border: OutlineInputBorder(),
@@ -267,11 +270,11 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextField(
-                      controller: _descripcionController,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      controller: descripcionController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         labelText: 'Descripción',
                         labelStyle: TextStyle(color: Colors.white),
                         border: OutlineInputBorder(),
@@ -284,18 +287,18 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                       ),
                       maxLines: 3,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     GestureDetector(
                       onTap: () async {
                         DateTime? fechaSeleccionada = await showDatePicker(
                           context: context,
-                          initialDate: _fechaLimite ?? DateTime.now(),
+                          initialDate: fechaLimite ?? DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100),
                           builder: (context, child) {
                             return Theme(
                               data: ThemeData.dark().copyWith(
-                                colorScheme: ColorScheme.dark(
+                                colorScheme: const ColorScheme.dark(
                                   primary: Colors.white,
                                   onPrimary: Colors.black,
                                   surface: Colors.black,
@@ -309,23 +312,23 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                         );
                         if (fechaSeleccionada != null) {
                           setState(() {
-                            _fechaLimite = fechaSeleccionada;
+                            fechaLimite = fechaSeleccionada;
                           });
                         }
                       },
                       child: Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
                         decoration: BoxDecoration(
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.white),
                         ),
                         child: Text(
-                          _fechaLimite != null
-                              ? 'Fecha Límite: ${DateFormat('dd/MM/yy').format(_fechaLimite!)}'
+                          fechaLimite != null
+                              ? 'Fecha Límite: ${DateFormat('dd/MM/yy').format(fechaLimite!)}'
                               : 'Seleccionar Fecha Límite',
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -337,8 +340,8 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child:
-                      Text('Cancelar', style: TextStyle(color: Colors.white)),
+                  child: const Text('Cancelar',
+                      style: TextStyle(color: Colors.white)),
                 ),
                 TextButton(
                   onPressed: () {
@@ -348,13 +351,14 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
                         .collection('subtareas')
                         .doc(widget.subtareaId)
                         .update({
-                      'nombre': _nombreController.text,
-                      'descripcion': _descripcionController.text,
-                      'fechaLimite': _fechaLimite?.toIso8601String(),
+                      'nombre': nombreController.text,
+                      'descripcion': descripcionController.text,
+                      'fechaLimite': fechaLimite?.toIso8601String(),
                     });
                     Navigator.pop(context);
                   },
-                  child: Text('Guardar', style: TextStyle(color: Colors.white)),
+                  child: const Text('Guardar',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             );

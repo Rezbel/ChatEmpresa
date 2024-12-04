@@ -40,7 +40,7 @@ class AuthChecker extends StatelessWidget {
           } else if (role == 'empleado') {
             return Bottomnavigation(); // Pantalla para empleado
           } else {
-            return const Center(child: Text("Rol desconocido"));
+            return LoginScreen(); 
           }
         },
       );

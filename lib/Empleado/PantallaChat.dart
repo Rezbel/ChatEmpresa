@@ -1,4 +1,5 @@
-import 'package:chatempresa/Empleado/ChatScreen.dart';
+import 'package:chatempresa/Login/LoginScreen.dart';
+import 'package:chatempresa/modelo/PAChatScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,40 +13,66 @@ class Pantallachat extends StatefulWidget {
 
 class _PantallachatState extends State<Pantallachat> {
   final currentUser = FirebaseAuth.instance.currentUser;
+  String searchQuery = "";
+
+  void _signOut(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Bater Papo',
-          style: TextStyle(fontSize: 20, color: Colors.white),
+          style: TextStyle(fontSize: 30, color: Colors.white),
         ),
         backgroundColor: const Color(0xFF282828),
         elevation: 0,
         actions: [
-          IconButton(
+          PopupMenuButton<String>(
+            onSelected: (String value) {
+              if (value == 'Cerrar sesión') {
+                _signOut(context);
+              }
+            },
             icon: const Icon(Icons.more_vert),
-            onPressed: () {},
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'Cerrar sesión',
+                child: Text('Cerrar sesión'),
+              ),
+            ],
           ),
         ],
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(8.0),
             child: TextField(
+              cursorColor: Colors.black,
               decoration: InputDecoration(
-                hintText: 'Buscar...',
+                hintText: 'Buscar usuario...',
                 filled: true,
-                fillColor: Colors.grey[800],
+                fillColor: const Color(0xFFE6EFFF),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                prefixIcon: const Icon(Icons.search, color: Colors.black),
+                hintStyle: const TextStyle(color: Colors.black),
               ),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value.toLowerCase();
+                });
+              },
             ),
           ),
           Expanded(
@@ -56,9 +83,23 @@ class _PantallachatState extends State<Pantallachat> {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
+
+                // Filtrar usuarios según la búsqueda
                 var users = snapshot.data!.docs.where((user) {
-                  return user.id != currentUser!.uid;
+                  var username =
+                      (user['username'] ?? '').toString().toLowerCase();
+                  return user.id != currentUser!.uid &&
+                      username.contains(searchQuery);
                 }).toList();
+
+                if (users.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No se encontraron usuarios.',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
 
                 return ListView.builder(
                   itemCount: users.length,
@@ -79,75 +120,21 @@ class _PantallachatState extends State<Pantallachat> {
                           child: Icon(Icons.person, color: Colors.white),
                         ),
                         title: Text(
-                          user['username'],
+                          user['username'] ?? 'Sin nombre',
                           style: const TextStyle(
                               color: Colors.black, fontWeight: FontWeight.bold),
                         ),
-                        subtitle: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('chats')
-                              .doc(getChatId(currentUser!.uid, user.id))
-                              .collection('messages')
-                              .orderBy('timestamp', descending: true)
-                              .limit(1)
-                              .snapshots(),
-                          builder: (context, chatSnapshot) {
-                            if (!chatSnapshot.hasData ||
-                                chatSnapshot.data!.docs.isEmpty) {
-                              return const Text(
-                                'No hay mensajes',
-                                style: TextStyle(color: Colors.black54),
-                              );
-                            }
-                            var lastMessage = chatSnapshot.data!.docs.first;
-                            String messageText =
-                                lastMessage['message'] ?? 'Mensaje vacío';
-                            return Text(
-                              messageText,
-                              style: const TextStyle(color: Colors.black54),
-                              overflow: TextOverflow.ellipsis,
-                            );
-                          },
+                        subtitle: const Text(
+                          'Último mensaje aquí',
+                          style: TextStyle(color: Colors.black54),
                         ),
-                        trailing: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('chats')
-                              .doc(getChatId(currentUser!.uid, user.id))
-                              .collection('messages')
-                              .orderBy('timestamp', descending: true)
-                              .limit(1)
-                              .snapshots(),
-                          builder: (context, chatSnapshot) {
-                            if (!chatSnapshot.hasData ||
-                                chatSnapshot.data!.docs.isEmpty) {
-                              return const Text(
-                                'Sin mensajes',
-                                style: TextStyle(color: Colors.black54),
-                              );
-                            }
-                            var lastMessage = chatSnapshot.data!.docs.first;
-
-                            // Verificar si 'timestamp' existe y no es null usando el operador ?.
-                            var timestamp =
-                                lastMessage['timestamp'] as Timestamp?;
-                            if (timestamp != null) {
-                              var date = timestamp.toDate();
-                              return Text(
-                                '${date.hour}:${date.minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(color: Colors.black54),
-                              );
-                            }
-                            return const Text(
-                              'Hora no disponible',
-                              style: TextStyle(color: Colors.black54),
-                            );
-                          },
-                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios,
+                            color: Colors.black54),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ChatScreen(
+                              builder: (context) => PAChatScreen(
                                 currentUserId: currentUser!.uid,
                                 otherUserId: user.id,
                               ),
@@ -164,11 +151,5 @@ class _PantallachatState extends State<Pantallachat> {
         ],
       ),
     );
-  }
-
-  String getChatId(String currentUserId, String otherUserId) {
-    List<String> ids = [currentUserId, otherUserId];
-    ids.sort();
-    return ids.join('_');
   }
 }

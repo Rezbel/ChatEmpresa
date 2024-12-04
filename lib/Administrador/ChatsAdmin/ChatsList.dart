@@ -1,18 +1,18 @@
-import 'package:chatempresa/Administrador/ChatsAdmin/PAChatScreen.dart';
+import 'package:chatempresa/modelo/PAChatScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ChatsList extends StatefulWidget {
+class PAChatsList extends StatefulWidget {
   final User? currentUser;
 
-  ChatsList({required this.currentUser});
+  const PAChatsList({super.key, required this.currentUser});
 
   @override
-  _ChatsListState createState() => _ChatsListState();
+  _PAChatsListState createState() => _PAChatsListState();
 }
 
-class _ChatsListState extends State<ChatsList> {
+class _PAChatsListState extends State<PAChatsList> {
   String searchQuery = "";
 
   @override
@@ -27,13 +27,13 @@ class _ChatsListState extends State<ChatsList> {
             decoration: InputDecoration(
               hintText: 'Buscar usuario...',
               filled: true,
-              fillColor: Color(0xFFE6EFFF),
+              fillColor: const Color(0xFFE6EFFF),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
-              prefixIcon: Icon(Icons.search, color: Colors.black),
-              hintStyle: TextStyle(color: Colors.black),
+              prefixIcon: const Icon(Icons.search, color: Colors.black),
+              hintStyle: const TextStyle(color: Colors.black),
             ),
             onChanged: (value) {
               setState(() {
@@ -45,19 +45,21 @@ class _ChatsListState extends State<ChatsList> {
         // Chats List
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('usuarios').snapshots(),
+            stream:
+                FirebaseFirestore.instance.collection('usuarios').snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
               var users = snapshot.data!.docs.where((user) {
-                var username = (user['username'] ?? '').toString().toLowerCase();
+                var username =
+                    (user['username'] ?? '').toString().toLowerCase();
                 return user.id != widget.currentUser!.uid &&
                     username.contains(searchQuery);
               }).toList();
 
               if (users.isEmpty) {
-                return Center(child: Text('No se encontraron usuarios.'));
+                return const Center(child: Text('No se encontraron usuarios.'));
               }
 
               return ListView.builder(
@@ -134,7 +136,7 @@ class _ChatsListState extends State<ChatsList> {
                             var date = timestamp.toDate();
                             return Text(
                               '${date.hour}:${date.minute.toString().padLeft(2, '0')}',
-                              style: TextStyle(color: Colors.black54),
+                              style: const TextStyle(color: Colors.black54),
                             );
                           }
                           return const Text(

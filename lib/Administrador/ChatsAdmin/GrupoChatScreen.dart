@@ -8,10 +8,10 @@ class GrupoChatScreen extends StatefulWidget {
   final String groupName;
 
   const GrupoChatScreen({
-    Key? key,
+    super.key,
     required this.groupId,
     required this.groupName,
-  }) : super(key: key);
+  });
 
   @override
   _GrupoChatScreenState createState() => _GrupoChatScreenState();
@@ -27,14 +27,14 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(Icons.group, color: Colors.white),
-            SizedBox(width: 8),
+            const Icon(Icons.group, color: Colors.white),
+            const SizedBox(width: 8),
             Text(widget.groupName),
           ],
         ),
-        backgroundColor: Color(0xFF6B6B6B),
+        backgroundColor: const Color(0xFF6B6B6B),
       ),
-      backgroundColor: Color(0xFF282828),
+      backgroundColor: const Color(0xFF282828),
       body: Column(
         children: [
           Expanded(
@@ -47,7 +47,7 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final messages = snapshot.data!.docs;
@@ -60,14 +60,17 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
                     final isMe = data['senderId'] == _currentUser?.uid;
 
                     return Align(
-                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      alignment:
+                          isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Row(
-                        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                        mainAxisAlignment: isMe
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (!isMe)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8.0, right: 8.0),
                               child: Column(
                                 children: [
                                   Icon(Icons.person, color: Colors.black),
@@ -75,17 +78,20 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
                               ),
                             ),
                           Container(
-                            margin: EdgeInsets.symmetric(
+                            margin: const EdgeInsets.symmetric(
                               vertical: 5,
                               horizontal: 10,
                             ),
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: isMe ? Color(0xFF6B6B6B) : Color(0xFFE6EFFF),
+                              color: isMe
+                                  ? const Color(0xFF6B6B6B)
+                                  : const Color(0xFFE6EFFF),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.75,
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.75,
                             ), // Limitar el ancho de los mensajes
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,21 +102,29 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
-                                      color: isMe ? Colors.white70 : Colors.grey[700],
+                                      color: isMe
+                                          ? Colors.white70
+                                          : Colors.grey[700],
                                     ),
                                   ),
-                                SizedBox(height: 5),
+                                const SizedBox(height: 5),
                                 GestureDetector(
                                   onTap: () {
                                     final text = data['message'];
                                     if (text.contains('.com')) {
-                                      final url = 'https://${text.trim()}';
+                                      final url = '${text.trim()}';
                                       launch(url);
                                     }
                                   },
                                   child: Text(
                                     data['message'] ?? '',
-                                    style: TextStyle(color: isMe ? Colors.white : Colors.black, decoration: data['message'].contains('.com') ? TextDecoration.underline : TextDecoration.none),
+                                    style: TextStyle(
+                                        color:
+                                            isMe ? Colors.white : Colors.black,
+                                        decoration:
+                                            data['message'].contains('.com')
+                                                ? TextDecoration.underline
+                                                : TextDecoration.none),
                                   ),
                                 ),
                               ],
@@ -134,9 +148,10 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
                     maxLines: 5,
                     minLines: 1,
                     decoration: InputDecoration(
-                      hintText: 'Escribe un mensaje...', hintStyle: TextStyle(color: Colors.black),
+                      hintText: 'Escribe un mensaje...',
+                      hintStyle: const TextStyle(color: Colors.black),
                       filled: true,
-                      fillColor: Color(0xFFE6EFFF),
+                      fillColor: const Color(0xFFE6EFFF),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
@@ -145,13 +160,14 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.attach_file, color: Colors.black),
+                            icon: const Icon(Icons.attach_file,
+                                color: Colors.black),
                             onPressed: () {
                               // Placeholder: button does not perform any action for now
                             },
                           ),
                           IconButton(
-                            icon: Icon(Icons.send, color: Colors.black),
+                            icon: const Icon(Icons.send, color: Colors.black),
                             onPressed: () {
                               if (_messageController.text.trim().isNotEmpty) {
                                 _sendMessage(_messageController.text.trim());
@@ -173,35 +189,34 @@ class _GrupoChatScreenState extends State<GrupoChatScreen> {
   }
 
   void _sendMessage(String message) async {
-  if (_currentUser == null) return;
+    if (_currentUser == null) return;
 
-  // Cargar datos del usuario actual desde Firestore
-  final userDoc = await FirebaseFirestore.instance
-      .collection('usuarios')
-      .doc(_currentUser!.uid)
-      .get();
+    // Cargar datos del usuario actual desde Firestore
+    final userDoc = await FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(_currentUser.uid)
+        .get();
 
-  if (!userDoc.exists) {
-    print("Usuario no encontrado en Firestore");
-    return;
+    if (!userDoc.exists) {
+      print("Usuario no encontrado en Firestore");
+      return;
+    }
+
+    final userData = userDoc.data() as Map<String, dynamic>;
+    final senderName = userData['username'] ?? 'Usuario';
+
+    final messageData = {
+      'message': message,
+      'senderId': _currentUser.uid,
+      'senderName': senderName, // Ahora usa el username desde Firestore
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+
+    // Guardar el mensaje en la colección 'mensajes'
+    await FirebaseFirestore.instance
+        .collection('grupos')
+        .doc(widget.groupId)
+        .collection('mensajes')
+        .add(messageData);
   }
-
-  final userData = userDoc.data() as Map<String, dynamic>;
-  final senderName = userData['username'] ?? 'Usuario';
-
-  final messageData = {
-    'message': message,
-    'senderId': _currentUser!.uid,
-    'senderName': senderName, // Ahora usa el username desde Firestore
-    'timestamp': FieldValue.serverTimestamp(),
-  };
-
-  // Guardar el mensaje en la colección 'mensajes'
-  await FirebaseFirestore.instance
-      .collection('grupos')
-      .doc(widget.groupId)
-      .collection('mensajes')
-      .add(messageData);
-}
-
 }

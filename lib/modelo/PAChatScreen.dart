@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
@@ -10,10 +9,10 @@ class PAChatScreen extends StatefulWidget {
   final String otherUserId;
 
   const PAChatScreen({
-    Key? key,
+    super.key,
     required this.currentUserId,
     required this.otherUserId,
-  }) : super(key: key);
+  });
 
   @override
   State<PAChatScreen> createState() => _PAChatScreenState();
@@ -59,7 +58,11 @@ class _PAChatScreenState extends State<PAChatScreen> {
 
     String chatId = getChatId();
 
-    await FirebaseFirestore.instance.collection('chats').doc(chatId).collection('messages').add({
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .add({
       'senderId': widget.currentUserId,
       'message': message,
       'timestamp': FieldValue.serverTimestamp(),
@@ -83,14 +86,14 @@ class _PAChatScreenState extends State<PAChatScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(Icons.person, color: Colors.white),
-            SizedBox(width: 8),
+            const Icon(Icons.person, color: Colors.white),
+            const SizedBox(width: 8),
             Text('$otherUserName'),
           ],
         ),
-        backgroundColor: Color(0xFF6B6B6B),
+        backgroundColor: const Color(0xFF6B6B6B),
       ),
-      backgroundColor: Color(0xFF282828),
+      backgroundColor: const Color(0xFF282828),
       body: Column(
         children: [
           Expanded(
@@ -105,7 +108,7 @@ class _PAChatScreenState extends State<PAChatScreen> {
                   : null,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 var messages = snapshot.data!.docs;
                 return ListView.builder(
@@ -113,20 +116,27 @@ class _PAChatScreenState extends State<PAChatScreen> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     var message = messages[index];
-                    bool isSentByCurrentUser = message['senderId'] == widget.currentUserId;
+                    bool isSentByCurrentUser =
+                        message['senderId'] == widget.currentUserId;
                     return Align(
-                      alignment: isSentByCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+                      alignment: isSentByCurrentUser
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        padding: EdgeInsets.all(10),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: isSentByCurrentUser ? Color(0xFF6B6B6B) : Color(0xFFE6EFFF),
+                          color: isSentByCurrentUser
+                              ? const Color(0xFF6B6B6B)
+                              : const Color(0xFFE6EFFF),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (message['message'] != null && message['message'].isNotEmpty)
+                            if (message['message'] != null &&
+                                message['message'].isNotEmpty)
                               GestureDetector(
                                 onTap: () {
                                   final text = message['message'];
@@ -137,7 +147,12 @@ class _PAChatScreenState extends State<PAChatScreen> {
                                 },
                                 child: Text(
                                   message['message'] ?? '',
-                                  style: TextStyle(color: Colors.black, decoration: message['message'].contains('.com') ? TextDecoration.underline : TextDecoration.none),
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      decoration:
+                                          message['message'].contains('.com')
+                                              ? TextDecoration.underline
+                                              : TextDecoration.none),
                                 ),
                               ),
                           ],
@@ -159,9 +174,10 @@ class _PAChatScreenState extends State<PAChatScreen> {
                     maxLines: 5,
                     minLines: 1,
                     decoration: InputDecoration(
-                      hintText: 'Escribe un mensaje...', hintStyle: TextStyle(color: Colors.black),
+                      hintText: 'Escribe un mensaje...',
+                      hintStyle: const TextStyle(color: Colors.black),
                       filled: true,
-                      fillColor: Color(0xFFE6EFFF),
+                      fillColor: const Color(0xFFE6EFFF),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
@@ -170,13 +186,14 @@ class _PAChatScreenState extends State<PAChatScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.attach_file, color: Colors.black),
+                            icon: const Icon(Icons.attach_file,
+                                color: Colors.black),
                             onPressed: () {
                               // Placeholder: button does not perform any action for now
                             },
                           ),
                           IconButton(
-                            icon: Icon(Icons.send, color: Colors.black),
+                            icon: const Icon(Icons.send, color: Colors.black),
                             onPressed: () {
                               if (_messageController.text.isNotEmpty) {
                                 sendMessage(_messageController.text);
