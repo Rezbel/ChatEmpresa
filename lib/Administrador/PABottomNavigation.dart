@@ -66,7 +66,7 @@ class _PABottomnavigationState extends State<PABottomnavigation> {
                 _openMeetingLink();
               }
             },
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert, color: Colors.white),
             itemBuilder: (BuildContext context) => [
               const PopupMenuItem<String>(
                 value: 'Cerrar sesión',

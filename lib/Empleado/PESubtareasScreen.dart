@@ -1,26 +1,24 @@
-import 'package:chatempresa/Administrador/Proyectos/CrearSubtareaScreen.dart';
-import 'package:chatempresa/Administrador/Proyectos/DetallesSubtareaScreen.dart';
-import 'package:chatempresa/Administrador/Proyectos/EditarTarea.dart';
+
+import 'package:chatempresa/Administrador/Proyectos/SubtareaCard.dart';
+import 'package:chatempresa/Empleado/PEDetallesSubtareaScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'SubtareaCard.dart'; // Archivo que contiene el widget SubtareaCard
-
-class SubtareasScreen extends StatefulWidget {
+class PESubtareasScreen extends StatefulWidget {
   final String projectId;
   final List<String> usuariosDelProyecto;
 
-  const SubtareasScreen({
+  const PESubtareasScreen({
     required this.projectId,
     required this.usuariosDelProyecto,
   });
 
   @override
-  _SubtareasScreenState createState() => _SubtareasScreenState();
+  _PESubtareasScreenState createState() => _PESubtareasScreenState();
 }
 
-class _SubtareasScreenState extends State<SubtareasScreen> {
+class _PESubtareasScreenState extends State<PESubtareasScreen> {
   int _itemsMostrarPendientes = 3;
   int _itemsMostrarEntregadas = 3;
 
@@ -65,29 +63,6 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
         backgroundColor: const Color(0xFF282828),
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Asignaciones', style: TextStyle(color: Colors.white)),
-        actions: [
-          FutureBuilder<Map<String, dynamic>>(
-            future: _cargarProyecto(),
-            builder: (context, snapshotProyecto) {
-              if (snapshotProyecto.connectionState == ConnectionState.waiting) {
-                return Container();
-              } else if (snapshotProyecto.hasError ||
-                  !snapshotProyecto.hasData) {
-                return Container();
-              }
-
-              final proyecto = snapshotProyecto.data!;
-              return IconButton(
-                icon: const Icon(Icons.edit, color: Colors.white),
-                onPressed: () => DialogUtils.mostrarDialogoEditar(
-                  context: context,
-                  projectId: widget.projectId,
-                  proyecto: proyecto,
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _cargarProyecto(),
@@ -224,7 +199,7 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          DetallesSubtareaScreen(
+                                          PEDetallesSubtareaScreen(
                                         subtarea: subtarea,
                                         usuarioAsignado: usuarioAsignado,
                                         projectId: widget.projectId,
@@ -278,7 +253,7 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          DetallesSubtareaScreen(
+                                          PEDetallesSubtareaScreen(
                                         subtarea: subtarea,
                                         usuarioAsignado: usuarioAsignado,
                                         projectId: widget.projectId,
@@ -310,21 +285,6 @@ class _SubtareasScreenState extends State<SubtareasScreen> {
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CrearSubtareaScreen(
-                projectId: widget.projectId,
-                usuariosDelProyecto: widget.usuariosDelProyecto,
-              ),
-            ),
-          );
-        },
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.add),
       ),
     );
   }

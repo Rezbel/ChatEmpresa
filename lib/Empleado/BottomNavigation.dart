@@ -56,7 +56,7 @@ class _BottomnavigationState extends State<Bottomnavigation> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () => _signOut(context),
           ),
         ],

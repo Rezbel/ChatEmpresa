@@ -1,5 +1,5 @@
+import 'package:chatempresa/Empleado/PEProjectCard.dart';
 import 'package:chatempresa/modelo/Proyecto.dart';
-import 'package:chatempresa/Administrador/Proyectos/ProyectoCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -128,7 +128,7 @@ class _PantallaproyectosState extends State<Pantallaproyectos> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 children: assignedProjects
                                     .map((project) =>
-                                        ProjectCard(project: project))
+                                        PEProjectCard(project: project))
                                     .toList(),
                               ),
                         const SizedBox(height: 16),
@@ -152,7 +152,7 @@ class _PantallaproyectosState extends State<Pantallaproyectos> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 children: finalizedProjects
                                     .map((project) =>
-                                        ProjectCard(project: project))
+                                        PEProjectCard(project: project))
                                     .toList(),
                               ),
                       ],

@@ -1,5 +1,6 @@
 import 'package:chatempresa/Administrador/PANuevoUsuario.dart';
 import 'package:chatempresa/Administrador/Proyectos/PAPantallaCrearProyecto.dart';
+import 'package:chatempresa/Login/PantallaRegistro.dart';
 import 'package:flutter/material.dart';
 
 class PAPantallaAdmin extends StatelessWidget {
@@ -39,7 +40,7 @@ class PAPantallaAdmin extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const Placeholder()));
+                        builder: (context) =>  PantallaRegistro()));
               },
             ),
             const SizedBox(height: 20),

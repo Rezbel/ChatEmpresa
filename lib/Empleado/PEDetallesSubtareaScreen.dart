@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:chatempresa/Administrador/Proyectos/EditarDialogoSubtarea.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,13 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DetallesSubtareaScreen extends StatefulWidget {
+class PEDetallesSubtareaScreen extends StatefulWidget {
   final Map<String, dynamic> subtarea;
   final String usuarioAsignado;
   final String projectId;
   final String subtareaId;
 
-  const DetallesSubtareaScreen({
+  const PEDetallesSubtareaScreen({
     super.key,
     required this.subtarea,
     required this.usuarioAsignado,
@@ -22,10 +21,10 @@ class DetallesSubtareaScreen extends StatefulWidget {
   });
 
   @override
-  _DetallesSubtareaScreenState createState() => _DetallesSubtareaScreenState();
+  _PEDetallesSubtareaScreenState createState() => _PEDetallesSubtareaScreenState();
 }
 
-class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
+class _PEDetallesSubtareaScreenState extends State<PEDetallesSubtareaScreen> {
   String? _archivoSeleccionado;
   bool _cargandoArchivo = false;
   bool _esEntregada = false;
@@ -122,26 +121,6 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Detalles de la Asignación',
             style: TextStyle(color: Colors.white)),
-        actions: [
-  IconButton(
-    icon: const Icon(Icons.edit, color: Colors.white),
-    onPressed: () {
-      showDialog(
-        context: context,
-        builder: (context) => EditarDialogoSubtarea(
-          projectId: widget.projectId,
-          subtareaId: widget.subtareaId,
-          nombreActual: widget.subtarea['nombre'],
-          descripcionActual: widget.subtarea['descripcion'],
-          fechaLimiteActual: widget.subtarea['fechaLimite'] != null
-              ? DateTime.parse(widget.subtarea['fechaLimite'])
-              : null,
-        ),
-      );
-    },
-  ),
-],
-
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -231,17 +210,18 @@ class _DetallesSubtareaScreenState extends State<DetallesSubtareaScreen> {
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-  onPressed: _esEntregada ? _cambiarEstadoSubtarea : null, // Deshabilitar si no está entregada
-  icon: Icon(Icons.undo, color: _esEntregada ? Colors.black : Colors.grey), // Cambiar color del ícono
-  label: Text(
-    'Devolver entrega', // Cambiar texto del botón
-    style: TextStyle(color: _esEntregada ? Colors.black : Colors.grey), // Cambiar color del texto
-  ),
-  style: ElevatedButton.styleFrom(
-    backgroundColor: _esEntregada ? Colors.white : Colors.grey[300], // Cambiar color de fondo
-  ),
-),
-
+              onPressed: _cambiarEstadoSubtarea,
+              icon: Icon(_esEntregada ? Icons.undo : Icons.check,
+                  color: Colors.black),
+              label: Text(
+                  _esEntregada
+                      ? 'Desmarcar como entregada'
+                      : 'Marcar como entregada',
+                  style: const TextStyle(color: Colors.black)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
+            ),
           ],
         ),
       ),

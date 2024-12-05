@@ -20,7 +20,6 @@ class _CrearSubtareaScreenState extends State<CrearSubtareaScreen> {
   final _descripcionController = TextEditingController();
   String? _usuarioAsignado;
   Map<String, String> _mapaUsuarios = {};
-  bool _isLoadingUsuarios = true;
 
   @override
   void initState() {
@@ -44,12 +43,10 @@ class _CrearSubtareaScreenState extends State<CrearSubtareaScreen> {
 
       setState(() {
         _mapaUsuarios = mapa;
-        _isLoadingUsuarios = false;
       });
     } catch (e) {
       print('Error al cargar usuarios: $e');
       setState(() {
-        _isLoadingUsuarios = false;
       });
     }
   }
