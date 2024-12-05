@@ -1,6 +1,7 @@
-import 'package:chatempresa/Administrador/ChatsAdmin/ChatsList.dart';
+import 'package:chatempresa/Empleado/PantallaChat.dart';
 import 'package:chatempresa/Empleado/PantallaGrupos.dart';
 import 'package:chatempresa/Empleado/PantallaProyectos.dart';
+import 'package:chatempresa/Login/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -21,9 +22,17 @@ class _BottomnavigationState extends State<Bottomnavigation> {
     currentUser = FirebaseAuth.instance.currentUser; // Obtener usuario actual.
   }
 
+  void _signOut(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+
   // Lista de pantallas para la navegación.
   List<Widget> get _screens => [
-        PAChatsList(currentUser: currentUser), // Pasar usuario a PAChatsList.
+        const Pantallachat(),
         const PantallaGrupos(), // Pantalla de Grupos.
         const Pantallaproyectos(), // Pantalla de Proyectos.
       ];
@@ -38,6 +47,20 @@ class _BottomnavigationState extends State<Bottomnavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Bater Papo',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF282828),
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _signOut(context),
+          ),
+        ],
+      ),
       body: _screens[_selectedIndex], // Muestra la pantalla actual.
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor:

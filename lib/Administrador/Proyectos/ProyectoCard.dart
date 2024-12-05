@@ -1,4 +1,4 @@
-import 'package:chatempresa/Administrador/Proyectos/Proyecto.dart';
+import 'package:chatempresa/modelo/Proyecto.dart';
 import 'package:chatempresa/Administrador/Proyectos/SubtareaScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class ProjectCard extends StatelessWidget {
   final Proyecto project;
 
-  const ProjectCard({required this.project});
+  const ProjectCard({super.key, required this.project});
 
   Stream<double> _obtenerProgreso(String projectId) {
     return FirebaseFirestore.instance
@@ -19,7 +19,7 @@ class ProjectCard extends StatelessWidget {
 
       final totalSubtareas = snapshot.docs.length;
       final completadas = snapshot.docs.where((doc) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         return data['estado'] == 'entregada';
       }).length;
 
@@ -27,7 +27,8 @@ class ProjectCard extends StatelessWidget {
     });
   }
 
-  Future<void> _actualizarEstadoProyecto(String projectId, String estado) async {
+  Future<void> _actualizarEstadoProyecto(
+      String projectId, String estado) async {
     try {
       await FirebaseFirestore.instance
           .collection('proyectos')
